@@ -24,6 +24,8 @@ import sys
 
 # Authentication class
 class prox_auth:
+    status = True
+
     """
     The authentication class, requires three strings:
     
@@ -40,23 +42,18 @@ class prox_auth:
         self.connect_data = { "username":username, "password":password }
         self.full_url = "https://%s:8006/api2/json/access/ticket" % (self.url)
 
-        self.setup_connection()
-
-    def setup_connection(self):
-        self.ticket = ""
-        self.CSRF = ""
-
         self.response = requests.post(self.full_url,verify=False,data=self.connect_data)
-        result = self.response
     
-        if not self.response.ok:
-            raise AssertionError('Authentification Error: HTTP Result: \n {}'.format(self.response))
+        self.returned_data = self.response.json()
 
-        self.returned_data={'status': {'code': self.response.status_code, 'ok': self.response.ok, 'reason': self.response.reason}}
-        self.returned_data.update(result.json())
-        
-        self.ticket = {'PVEAuthCookie':self.returned_data['data']['ticket']}
-        self.CSRF = self.returned_data['data']['CSRFPreventionToken']
+        if self.returned_data['data'] is None:
+            self.ticket = None
+            self.CSRF = None
+            self.status = False
+        else:
+            self.ticket = {'PVEAuthCookie':self.returned_data['data']['ticket']} if 'ticket' in self.returned_data['data'] else None
+            self.CSRF = self.returned_data['data']['CSRFPreventionToken'] if 'CSRFPreventionToken' in self.returned_data['data'] else None
+            self.status = True
 
 # The meat and veg class
 class pyproxmox:
