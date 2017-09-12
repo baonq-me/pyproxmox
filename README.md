@@ -1,15 +1,30 @@
 pyproxmox
 =========
 
-## A Python wrapper for the Proxmox 2.x API
+# A Python wrapper for the Proxmox 2.x API
 
 This readme is edited by me.
+- Improve documents
+- Fix crash when failed to connect to proxmox server
+- Add example code
 
-### Installation and dependency
+## Installation and dependencies
+
+1. Install original pyproxmox library and other dependencies
+
 ```
-	sudo pip install pyproxmox requests
+	sudo pip install pyproxmox
+	sudo pip install quests==2.6.0
 ```
-###### Example usage
+
+2. Clone this repo and overwrite existing pyproxmox
+
+```
+	git clone https://github.com/baonq-me/pyproxmox
+	sudo cp pyproxmox/src/pyproxmox.py /usr/local/lib/python2.7/dist-packages/pyproxmox.py
+```
+
+## Example usage
 
 1. Import everything from the module
 
@@ -17,8 +32,7 @@ This readme is edited by me.
 	from pyproxmox import *`
 ```
 
-2. Create an instance of the prox_auth class by passing in the
-url or ip of a server in the cluster, username and password
+2. Create an instance of the prox_auth class by passing in the url or ip of a server in the cluster, username and password
 
 ```
 	connect = prox_auth('mypve.baonq.me', 'root@pam', '123456')`
@@ -38,16 +52,18 @@ In case of failed connection, `connect.status` will be `False`. Error message ca
 	proxmox = pyproxmox(connect)`
 ```
 
-4. Run the pre defined methods of the pyproxmox class
+4. Run the pre-defined methods of the pyproxmox class
 
 ```
 	status = proxmox.getClusterStatus()
 	print json.dumps(status)
 ```
 
-NOTE They all return data, usually in JSON format.
+NOTE They all return data, always in JSON format. For more information see https//github.com/Daemonthread/pyproxmox
 
-For more information see https//github.com/Daemonthread/pyproxmox
+Links:
+- [Proxmox VE API introduction](https://pve.proxmox.com/wiki/Proxmox_VE_API)
+- [Proxmox VE API description](https://pve.proxmox.com/pve-docs/api-viewer/index.html)
 
 #### Methods requiring post_data
 
