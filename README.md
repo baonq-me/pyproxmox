@@ -59,22 +59,32 @@ For more information on the accepted variables please see http//pve.proxmox.com/
 #### GET Methods
 
 ##### Cluster Methods
-		Syntax: getClusterStatus()
-		Example: 
-		print json.dumps(getClusterStatus())
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}
+
+Syntax: 
+`getClusterStatus()`
+
+Example: 
+
+			print json.dumps(getClusterStatus())
+			{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}
 
 "Get cluster status information. Returns JSON"
 
-		getClusterBackupSchedule()
+Syntax: `getClusterBackupSchedule()`
 		
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}
+Example:
+
+			print json.dumps(getClusterBackupSchedule())
+			{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}
 
 "List vzdump backup schedule. Returns JSON"
 
-		getClusterVmNextId()
+Syntax: `getClusterVmNextId()`
 		
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}
+Example:
+
+			print json.dumps(getClusterVmNextId())
+			{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}
 "Get next VM ID (ID that is free and ready to assign to VM) of cluster. Returns JSON"
 
 ##### Node Methods
