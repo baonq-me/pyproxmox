@@ -13,12 +13,12 @@ This readme is edited by me.
 
 1. Import everything from the module
 
-	`python from pyproxmox import *
+	`from pyproxmox import *`
 
 2. Create an instance of the prox_auth class by passing in the
 url or ip of a server in the cluster, username and password
 
-	connect = prox_auth('mypve.baonq.me', 'root@pam', '123456')
+	`connect = prox_auth('mypve.baonq.me', 'root@pam', '123456')`
 
 In case of failed connection, `connect.status` will be `False`. Error message can be extracted via `connect.error`
 
