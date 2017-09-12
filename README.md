@@ -28,7 +28,7 @@ In case of failed connection, `connect.status` will be `False`. Error message ca
 
 3. Create and instance of the pyproxmox class using the auth object as a parameter
 
-		proxmox = pyproxmox(a)
+		proxmox = pyproxmox(connect)
 
 4. Run the pre defined methods of the pyproxmox class
 
@@ -50,7 +50,7 @@ I would need to pass the post_data with all the required variables for proxmox.
 				'disk':'10','hostname':'test.example.org','memory':'1024',
 				'password':'testPassword','swap':'1024'}
 	
-	b.createOpenvzContainer('vnode01',post_data)
+	proxmox.createOpenvzContainer('pve',post_data)
 
 For more information on the accepted variables please see http//pve.proxmox.com/pve2-api-doc/
 
@@ -61,7 +61,7 @@ For more information on the accepted variables please see http//pve.proxmox.com/
 ##### Cluster Methods
 		Syntax: getClusterStatus()
 		Example: 
-		print 
+		print json.dumps(getClusterStatus())
 		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}
 
 "Get cluster status information. Returns JSON"
