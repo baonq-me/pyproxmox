@@ -72,47 +72,66 @@ For more information on the accepted variables please see http//pve.proxmox.com/
 
 ##### Cluster Methods
 
-1. Get cluster status information. Returns JSON
+"Get cluster status information. Returns JSON"
 
 Syntax: `getClusterStatus()`
 
 Example: `print json.dumps(getClusterStatus())`
 
 Output:
+
 `{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}`
 
-2. List vzdump backup schedule. Returns JSON
+"List vzdump backup schedule. Returns JSON"
 
 Syntax: `getClusterBackupSchedule()`
 
 Example: `print json.dumps(getClusterBackupSchedule())`
 
 Output:
+
 `{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}`
 
-
-
-Syntax: `getClusterVmNextId()`	
-Example:
-
-	print json.dumps(getClusterVmNextId())
-	{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}
 "Get next VM ID (ID that is free and ready to assign to VM) of cluster. Returns JSON"
 
+Syntax: `getClusterVmNextId()`	
+
+Example: `print json.dumps(getClusterVmNextId())`
+
+Output:
+`{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}`
+
 ##### Node Methods
-		getNodeNetworks(node)
-		
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"method6": "manual", "iface": "vmbr0", "families": ["inet"], "bridge_fd": "0", "method": "static", "priority": 5, "netmask": "255.255.255.0", "bridge_stp": "off", "bridge_ports": "enp1s0f0", "address": "192.168.0.40", "active": 1, "autostart": 1, "type": "bridge", "gateway": "192.168.0.1"}, {"method6": "manual", "iface": "enp1s0f1", "families": ["inet"], "exists": 1, "priority": 4, "type": "eth", "method": "manual"}, {"method6": "manual", "iface": "enp1s0f0", "families": ["inet"], "exists": 1, "priority": 3, "active": 1, "type": "eth", "method": "manual"}]}
 
 "List available networks. Returns JSON"
-  
-		getNodeInterface(node,interface)
-		
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"method6": "manual", "bridge_stp": "off", "families": ["inet"], "bridge_fd": "0", "method": "static", "priority": 5, "netmask": "255.255.255.0", "bridge_ports": "enp1s0f0", "address": "192.168.0.40", "active": 1, "autostart": 1, "type": "bridge", "gateway": "192.168.0.1"}}
 
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"method6": "manual", "families": ["inet"], "exists": 1, "priority": 4, "type": "eth", "method": "manual"}}
+Syntax: `getNodeNetworks(node)`
+
+Example: `print json.dumps(getNodeNetworks('pve'))`
+		
+Output:
+
+`{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"method6": "manual", "iface": "vmbr0", "families": ["inet"], "bridge_fd": "0", "method": "static", "priority": 5, "netmask": "255.255.255.0", "bridge_stp": "off", "bridge_ports": "enp1s0f0", "address": "192.168.0.40", "active": 1, "autostart": 1, "type": "bridge", "gateway": "192.168.0.1"}, {"method6": "manual", "iface": "enp1s0f1", "families": ["inet"], "exists": 1, "priority": 4, "type": "eth", "method": "manual"}, {"method6": "manual", "iface": "enp1s0f0", "families": ["inet"], "exists": 1, "priority": 3, "active": 1, "type": "eth", "method": "manual"}]}`
 
 "Read network device configuration. Returns JSON"
+
+Syntax: `getNodeInterface(node,interface)`
+		
+Example: 
+
+```
+print json.dumps(getNodeInterface('pve', 'vmbr0'))`
+print json.dumps(getNodeInterface('pve', 'enp1s0f0'))`
+```
+
+Output:
+
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"method6": "manual", "bridge_stp": "off", "families": ["inet"], "bridge_fd": "0", "method": "static", "priority": 5, "netmask": "255.255.255.0", "bridge_ports": "enp1s0f0", "address": "192.168.0.40", "active": 1, "autostart": 1, "type": "bridge", "gateway": "192.168.0.1"}}
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"method6": "manual", "families": ["inet"], "exists": 1, "priority": 4, "type": "eth", "method": "manual"}}
+```
+
+
 
 		getNodeContainerIndex(node)
 		
