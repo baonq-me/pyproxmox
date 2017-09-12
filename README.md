@@ -326,9 +326,9 @@ Output:
 {"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"status": "stopped", "node": "pve", "pstart": 1515643, "type": "qmstart", "pid": 23908, "upid": "UPID:pve:00005D64:0017207B:59B6642D:qmstart:101:root@pam:", "user": "root@pam", "starttime": 1505125421, "exitstatus": "OK", "id": "101"}}
 ```
 
-
-
 ##### Scan
+
+"Get index of available scan methods, Returns JSON"
 
 Syntax: `getNodeScanMethods(node)`
 
@@ -340,7 +340,7 @@ Output:
 {"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"method": "lvm"}, {"method": "iscsi"}, {"method": "nfs"}, {"method": "glusterfs"}, {"method": "usb"}, {"method": "zfs"}]}
 ```
 
-"Get index of available scan methods, Returns JSON"
+"Scan remote iSCSI server."
 
 Syntax: `getRemoteiSCSI(node)`
 
@@ -352,7 +352,7 @@ Output:
 {"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"portal": "property is missing and it is not optional"}, "data": null}
 ```
 
-"Scan remote iSCSI server."
+"Scan local LVM groups"
 
 Syntax: `getNodeLVMGroups(node)`
 
@@ -364,7 +364,7 @@ Output:
 {"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}
 ```
 
-"Scan local LVM groups"
+"Scan remote NFS server"
 
 Syntax: `getRemoteNFS(node)`
 
@@ -375,134 +375,246 @@ Output:
 ```
 {"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"server": "property is missing and it is not optional"}, "data": null}
 ```
-"Scan remote NFS server"
-
-		getNodeUSB(node)
-		print json.dumps(proxmox.getNodeUSB('pve'))
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"vendid": "1d6b", "devnum": 1, "product": "EHCI Host Controller", "busnum": 1, "level": 0, "class": 9, "speed": "480", "port": 0, "prodid": "0002", "manufacturer": "Linux 4.10.15-1-pve ehci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "EHCI Host Controller", "busnum": 2, "level": 0, "class": 9, "speed": "480", "port": 0, "prodid": "0002", "manufacturer": "Linux 4.10.15-1-pve ehci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 3, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 4, "level": 0, "class": 9, "speed": "12", "port": 0, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1a2c", "devnum": 2, "product": "USB Keyboard", "busnum": 4, "level": 1, "usbpath": "2", "class": 0, "speed": "1.5", "port": 1, "prodid": "0e24", "manufacturer": "SEM"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 5, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "046b", "devnum": 2, "product": "Virtual Keyboard and Mouse", "busnum": 5, "level": 1, "usbpath": "1", "port": 0, "speed": "12", "class": 0, "prodid": "ff10", "manufacturer": "American Megatrends Inc."}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 6, "level": 0, "class": 9, "speed": "12", "port": 0, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 7, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 8, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}]}
 
 "List local USB devices"
 
-    
-##### OpenVZ Methods
+Syntax: `getNodeUSB(node)`
 
-		getContainerIndex(node,vmid)
-		print json.dumps(proxmox.getContainerIndex('pve', '106'))
-		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106' not implemented", "code": 501, "ok": false}, "data": null}
+Example: `print json.dumps(proxmox.getNodeUSB('pve'))`
+
+Output:
+
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"vendid": "1d6b", "devnum": 1, "product": "EHCI Host Controller", "busnum": 1, "level": 0, "class": 9, "speed": "480", "port": 0, "prodid": "0002", "manufacturer": "Linux 4.10.15-1-pve ehci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "EHCI Host Controller", "busnum": 2, "level": 0, "class": 9, "speed": "480", "port": 0, "prodid": "0002", "manufacturer": "Linux 4.10.15-1-pve ehci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 3, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 4, "level": 0, "class": 9, "speed": "12", "port": 0, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1a2c", "devnum": 2, "product": "USB Keyboard", "busnum": 4, "level": 1, "usbpath": "2", "class": 0, "speed": "1.5", "port": 1, "prodid": "0e24", "manufacturer": "SEM"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 5, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "046b", "devnum": 2, "product": "Virtual Keyboard and Mouse", "busnum": 5, "level": 1, "usbpath": "1", "port": 0, "speed": "12", "class": 0, "prodid": "ff10", "manufacturer": "American Megatrends Inc."}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 6, "level": 0, "class": 9, "speed": "12", "port": 0, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 7, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 8, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}]}
+```
+
+##### OpenVZ Methods
 
 "Directory index. Returns JSON"
 
-		getContainerStatus(node,vmid)
-		print json.dumps(proxmox.getContainerStatus('pve', '106'))
-		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/status/current' not implemented", "code": 501, "ok": false}, "data": null}
+Syntax: `getContainerIndex(node,vmid)`
+
+Example: `print json.dumps(proxmox.getContainerIndex('pve', '106'))`
+
+Output:
+
+```
+{"status": {"reason": "Method 'GET /nodes/pve/openvz/106' not implemented", "code": 501, "ok": false}, "data": null}
+```
 
 "Get virtual machine status. Returns JSON"
 
-		getContainerBeans(node,vmid)
-		print json.dumps(proxmox.getContainerBeans('pve', '106'))
-		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/status/ubc' not implemented", "code": 501, "ok": false}, "data": null}
+Syntax: `getContainerStatus(node,vmid)`
+
+Example: `print json.dumps(proxmox.getContainerStatus('pve', '106'))`
+
+Output:
+
+```
+{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/status/current' not implemented", "code": 501, "ok": false}, "data": null}
+```
 
 "Get container user_beancounters. Returns JSON"
 
-		getContainerConfig(node,vmid)
-		print json.dumps(proxmox.getContainerConfig('pve', '106'))
-		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/config' not implemented", "code": 501, "ok": false}, "data": null}
+Syntax: `getContainerBeans(node,vmid)`
+
+Example: `print json.dumps(proxmox.getContainerBeans('pve', '106'))`
+
+Output:
+
+```
+{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/status/ubc' not implemented", "code": 501, "ok": false}, "data": null}
+```
 
 "Get container configuration. Returns JSON"
 
-		getContainerInitLog(node,vmid)
-		print json.dumps(proxmox.getContainerInitLog('pve', '106'))
-		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/initlog' not implemented", "code": 501, "ok": false}, "data": null}
+Syntax: `getContainerConfig(node,vmid)`
 
-		
+Example: `print json.dumps(proxmox.getContainerConfig('pve', '106'))`
+
+Output:
+
+```
+{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/config' not implemented", "code": 501, "ok": false}, "data": null}
+```
+
 "Read init log. Returns JSON"
 
-		getContainerRRD(node,vmid)
-		print json.dumps(proxmox.getContainerRRD('pve', '106'))
-		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/rrd' not implemented", "code": 501, "ok": false}, "data": null}
+Syntax: `getContainerInitLog(node,vmid)`
 
+Example: `print json.dumps(proxmox.getContainerInitLog('pve', '106'))`
+
+Output:
+
+```
+{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/initlog' not implemented", "code": 501, "ok": false}, "data": null}
+```
+		
 "Read VM RRD statistics. Returns PNG"
 
+Syntax: `getContainerRRD(node,vmid)`
 
-		def getContainerRRDData(node,vmid)
-		print json.dumps(proxmox.getContainerRRDData('pve', '106'))
-		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/rrddata' not implemented", "code": 501, "ok": false}, "data": null}
+Example: `print json.dumps(proxmox.getContainerRRD('pve', '106'))`
+
+Output:
+
+```
+{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/rrd' not implemented", "code": 501, "ok": false}, "data": null}
+```
 
 "Read VM RRD statistics. Returns RRD"
 
-##### KVM Methods
+Syntax: `getContainerRRDData(node,vmid)`
 
-		getVirtualIndex(node,vmid)
-		print json.dumps(proxmox.getVirtualIndex('pve', '106'))
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"subdir": "config"}, {"subdir": "pending"}, {"subdir": "status"}, {"subdir": "unlink"}, {"subdir": "vncproxy"}, {"subdir": "migrate"}, {"subdir": "resize"}, {"subdir": "move"}, {"subdir": "rrd"}, {"subdir": "rrddata"}, {"subdir": "monitor"}, {"subdir": "agent"}, {"subdir": "snapshot"}, {"subdir": "spiceproxy"}, {"subdir": "sendkey"}, {"subdir": "firewall"}]}
+Example: `print json.dumps(proxmox.getContainerRRDData('pve', '106'))`
+
+Output:
+
+```
+{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/rrddata' not implemented", "code": 501, "ok": false}, "data": null}
+```
+
+##### KVM Methods
 
 "Directory index. Returns JSON"
 
-		getVirtualStatus(node,vmid)
-		print json.dumps(proxmox.getVirtualStatus('pve', '103'))
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"status": "stopped", "uptime": 0, "ha": {"managed": 0}, "name": "desktop.ubuntu.baonq.me", "diskread": 0, "mem": 0, "pid": null, "cpus": 2, "netin": 0, "diskwrite": 0, "template": "", "netout": 0, "qmpstatus": "stopped", "disk": 0, "cpu": 0, "maxdisk": 42949672960, "maxmem": 2147483648}}
+Syntax: `getVirtualIndex(node,vmid)`
+
+Example: `print json.dumps(proxmox.getVirtualIndex('pve', '106'))`
+
+Output:
+
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"subdir": "config"}, {"subdir": "pending"}, {"subdir": "status"}, {"subdir": "unlink"}, {"subdir": "vncproxy"}, {"subdir": "migrate"}, {"subdir": "resize"}, {"subdir": "move"}, {"subdir": "rrd"}, {"subdir": "rrddata"}, {"subdir": "monitor"}, {"subdir": "agent"}, {"subdir": "snapshot"}, {"subdir": "spiceproxy"}, {"subdir": "sendkey"}, {"subdir": "firewall"}]}
+```
 
 "Get virtual machine status. Returns JSON"
 
-		getVirtualConfig(node,vmid)
-		print json.dumps(proxmox.getVirtualConfig('pve', '103'))
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"smbios1": "uuid=51700618-8ace-4729-958f-2c8d8fe7e505", "scsihw": "virtio-scsi-pci", "balloon": 0, "cpu": "host", "scsi0": "local-zfs:vm-103-disk-1,size=40G", "numa": 0, "memory": 2048, "ostype": "l26", "cores": 1, "net0": "virtio=A2:5F:E6:53:92:4C,bridge=vmbr0", "bootdisk": "scsi0", "sockets": 2, "digest": "8c91b8be2101bdfdfd0e583578ffb99af6966ae4", "name": "desktop.ubuntu.baonq.me"}}
+Syntax: `getVirtualStatus(node,vmid)`
+
+Example: `print json.dumps(proxmox.getVirtualStatus('pve', '103'))`
+
+Output:
+
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"status": "stopped", "uptime": 0, "ha": {"managed": 0}, "name": "desktop.ubuntu.baonq.me", "diskread": 0, "mem": 0, "pid": null, "cpus": 2, "netin": 0, "diskwrite": 0, "template": "", "netout": 0, "qmpstatus": "stopped", "disk": 0, "cpu": 0, "maxdisk": 42949672960, "maxmem": 2147483648}}
+```
 
 "Get virtual machine configuration. Returns JSON"
 
-		getVirtualRRD(node,vmid)
-		print json.dumps(proxmox.getVirtualRRD('pve', '103'))
-		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"ds": "property is missing and it is not optional", "timeframe": "property is missing and it is not optional"}, "data": null}
+Syntax: `getVirtualConfig(node,vmid)`
+
+Example: `print json.dumps(proxmox.getVirtualConfig('pve', '103'))`
+
+Output:
+
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"smbios1": "uuid=51700618-8ace-4729-958f-2c8d8fe7e505", "scsihw": "virtio-scsi-pci", "balloon": 0, "cpu": "host", "scsi0": "local-zfs:vm-103-disk-1,size=40G", "numa": 0, "memory": 2048, "ostype": "l26", "cores": 1, "net0": "virtio=A2:5F:E6:53:92:4C,bridge=vmbr0", "bootdisk": "scsi0", "sockets": 2, "digest": "8c91b8be2101bdfdfd0e583578ffb99af6966ae4", "name": "desktop.ubuntu.baonq.me"}}
+```
 
 "Read VM RRD statistics. Returns JSON"
 
-		getVirtualRRDData(node,vmid)
-		print json.dumps(proxmox.getVirtualRRDData('pve', '103'))
-		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
+Syntax: `getVirtualRRD(node,vmid)`
+
+Example: `print json.dumps(proxmox.getVirtualRRD('pve', '103'))`
+
+Output:
+
+```
+{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"ds": "property is missing and it is not optional", "timeframe": "property is missing and it is not optional"}, "data": null}
+```
 
 "Read VM RRD statistics. Returns JSON"
+
+Syntax: `getVirtualRRDData(node,vmid)`
+
+Example: `print json.dumps(proxmox.getVirtualRRDData('pve', '103'))`
+
+Output:
+
+```
+{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
+```
 
 ##### Storage Methods
 
-		getStorageVolumeData(node,storage,volume)
-		print json.dumps(proxmox.getStorageVolumeData('pve', 'local-zfs', ''))
-		print json.dumps(proxmox.getStorageVolumeData('pve', 'local-zfs', 'vm-102-disk-1'))
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"name": "subvol-105-disk-1", "parent": null, "format": "subvol", "vmid": "105", "content": "images", "volid": "local-zfs:subvol-105-disk-1", "size": 32212254720}, {"name": "subvol-106-disk-1", "parent": null, "format": "subvol", "vmid": "106", "content": "images", "volid": "local-zfs:subvol-106-disk-1", "size": 32212254720}, {"name": "vm-100-disk-1", "parent": null, "format": "raw", "vmid": "100", "content": "images", "volid": "local-zfs:vm-100-disk-1", "size": 32212254720}, {"name": "vm-101-disk-1", "parent": null, "format": "raw", "vmid": "101", "content": "images", "volid": "local-zfs:vm-101-disk-1", "size": 64424509440}, {"name": "vm-102-disk-1", "parent": null, "format": "raw", "vmid": "102", "content": "images", "volid": "local-zfs:vm-102-disk-1", "size": 64424509440}, {"name": "vm-103-disk-1", "parent": null, "format": "raw", "vmid": "103", "content": "images", "volid": "local-zfs:vm-103-disk-1", "size": 42949672960}, {"name": "vm-104-disk-1", "parent": null, "format": "raw", "vmid": "104", "content": "images", "volid": "local-zfs:vm-104-disk-1", "size": 32212254720}]}
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"path": "/dev/zvol/rpool/data/vm-102-disk-1", "size": 64424509440, "used": 0, "format": "raw"}}
-
-
 "Get volume attributes. Returns JSON"
 
-		getStorageConfig(storage)
-		print json.dumps(proxmox.getStorageConfig('local-zfs'))
-		print json.dumps(proxmox.getStorageConfig('local'))
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"storage": "local-zfs", "content": "images,rootdir", "pool": "rpool/data", "sparse": 1, "type": "zfspool", "digest": "0e7b92ec3d27fdaae928f801208da4b1001eeaa8"}}
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"content": "vztmpl,iso,backup", "type": "dir", "storage": "local", "digest": "0e7b92ec3d27fdaae928f801208da4b1001eeaa8", "path": "/var/lib/vz"}}
+Syntax: `getStorageVolumeData(node,storage,volume)`
 
+Example: 
+
+```
+print json.dumps(proxmox.getStorageVolumeData('pve', 'local-zfs', ''))`
+print json.dumps(proxmox.getStorageVolumeData('pve', 'local-zfs', 'vm-102-disk-1'))
+```
+
+Output:
+
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"name": "subvol-105-disk-1", "parent": null, "format": "subvol", "vmid": "105", "content": "images", "volid": "local-zfs:subvol-105-disk-1", "size": 32212254720}, {"name": "subvol-106-disk-1", "parent": null, "format": "subvol", "vmid": "106", "content": "images", "volid": "local-zfs:subvol-106-disk-1", "size": 32212254720}, {"name": "vm-100-disk-1", "parent": null, "format": "raw", "vmid": "100", "content": "images", "volid": "local-zfs:vm-100-disk-1", "size": 32212254720}, {"name": "vm-101-disk-1", "parent": null, "format": "raw", "vmid": "101", "content": "images", "volid": "local-zfs:vm-101-disk-1", "size": 64424509440}, {"name": "vm-102-disk-1", "parent": null, "format": "raw", "vmid": "102", "content": "images", "volid": "local-zfs:vm-102-disk-1", "size": 64424509440}, {"name": "vm-103-disk-1", "parent": null, "format": "raw", "vmid": "103", "content": "images", "volid": "local-zfs:vm-103-disk-1", "size": 42949672960}, {"name": "vm-104-disk-1", "parent": null, "format": "raw", "vmid": "104", "content": "images", "volid": "local-zfs:vm-104-disk-1", "size": 32212254720}]}
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"path": "/dev/zvol/rpool/data/vm-102-disk-1", "size": 64424509440, "used": 0, "format": "raw"}}
+```
 
 "Read storage config. Returns JSON"
-    
-		getNodeStorageContent(node,storage)
-		print json.dumps(proxmox.getNodeStorageContent('pve', 'local-zfs'))
-		print json.dumps(proxmox.getNodeStorageContent('pve', 'local'))
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"name": "subvol-105-disk-1", "parent": null, "format": "subvol", "vmid": "105", "content": "images", "volid": "local-zfs:subvol-105-disk-1", "size": 32212254720}, {"name": "subvol-106-disk-1", "parent": null, "format": "subvol", "vmid": "106", "content": "images", "volid": "local-zfs:subvol-106-disk-1", "size": 32212254720}, {"name": "vm-100-disk-1", "parent": null, "format": "raw", "vmid": "100", "content": "images", "volid": "local-zfs:vm-100-disk-1", "size": 32212254720}, {"name": "vm-101-disk-1", "parent": null, "format": "raw", "vmid": "101", "content": "images", "volid": "local-zfs:vm-101-disk-1", "size": 64424509440}, {"name": "vm-102-disk-1", "parent": null, "format": "raw", "vmid": "102", "content": "images", "volid": "local-zfs:vm-102-disk-1", "size": 64424509440}, {"name": "vm-103-disk-1", "parent": null, "format": "raw", "vmid": "103", "content": "images", "volid": "local-zfs:vm-103-disk-1", "size": 42949672960}, {"name": "vm-104-disk-1", "parent": null, "format": "raw", "vmid": "104", "content": "images", "volid": "local-zfs:vm-104-disk-1", "size": 32212254720}]}
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"content": "vztmpl", "volid": "local:vztmpl/centos-7-default_20170504_amd64.tar.xz", "format": "txz", "size": 68497932}, {"content": "vztmpl", "volid": "local:vztmpl/ubuntu-16.04-standard_16.04-1_amd64.tar.gz", "format": "tgz", "size": 197123375}, {"content": "iso", "volid": "local:iso/CentOS-7-x86_64-Minimal-1611.iso", "size": 713031680, "format": "iso"}, {"content": "iso", "volid": "local:iso/gparted-live-0.28.1-1-amd64.iso", "format": "iso", "size": 286261248}, {"content": "iso", "volid": "local:iso/ubuntu-16.04.2-server-amd64.iso", "format": "iso", "size": 869269504}, {"content": "iso", "volid": "local:iso/ubuntu-17.04-desktop-amd64.iso", "format": "iso", "size": 1609039872}, {"content": "iso", "volid": "local:iso/Windows_10_x64.iso", "size": 4083853312, "format": "iso"}, {"content": "iso", "volid": "local:iso/Windows_7_AIO.iso", "format": "iso", "size": 4172677120}]}
 
+Syntax: `getStorageConfig(storage)`
+
+Example:
+
+```
+print json.dumps(proxmox.getStorageConfig('local-zfs'))
+print json.dumps(proxmox.getStorageConfig('local'))
+```
+
+Output:
+
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"storage": "local-zfs", "content": "images,rootdir", "pool": "rpool/data", "sparse": 1, "type": "zfspool", "digest": "0e7b92ec3d27fdaae928f801208da4b1001eeaa8"}}
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"content": "vztmpl,iso,backup", "type": "dir", "storage": "local", "digest": "0e7b92ec3d27fdaae928f801208da4b1001eeaa8", "path": "/var/lib/vz"}}
+```
 
 "List storage content. Returns JSON"
+    
+Syntax: `getNodeStorageContent(node,storage)`
 
-		getNodeStorageRRD(node,storage)
-		print json.dumps(proxmox.getNodeStorageRRD('pve', 'local'))
-		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"ds": "property is missing and it is not optional", "timeframe": "property is missing and it is not optional"}, "data": null}
+Example:
+
+```
+print json.dumps(proxmox.getNodeStorageContent('pve', 'local-zfs'))
+print json.dumps(proxmox.getNodeStorageContent('pve', 'local'))
+```
+
+Output:
+
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"name": "subvol-105-disk-1", "parent": null, "format": "subvol", "vmid": "105", "content": "images", "volid": "local-zfs:subvol-105-disk-1", "size": 32212254720}, {"name": "subvol-106-disk-1", "parent": null, "format": "subvol", "vmid": "106", "content": "images", "volid": "local-zfs:subvol-106-disk-1", "size": 32212254720}, {"name": "vm-100-disk-1", "parent": null, "format": "raw", "vmid": "100", "content": "images", "volid": "local-zfs:vm-100-disk-1", "size": 32212254720}, {"name": "vm-101-disk-1", "parent": null, "format": "raw", "vmid": "101", "content": "images", "volid": "local-zfs:vm-101-disk-1", "size": 64424509440}, {"name": "vm-102-disk-1", "parent": null, "format": "raw", "vmid": "102", "content": "images", "volid": "local-zfs:vm-102-disk-1", "size": 64424509440}, {"name": "vm-103-disk-1", "parent": null, "format": "raw", "vmid": "103", "content": "images", "volid": "local-zfs:vm-103-disk-1", "size": 42949672960}, {"name": "vm-104-disk-1", "parent": null, "format": "raw", "vmid": "104", "content": "images", "volid": "local-zfs:vm-104-disk-1", "size": 32212254720}]}
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"content": "vztmpl", "volid": "local:vztmpl/centos-7-default_20170504_amd64.tar.xz", "format": "txz", "size": 68497932}, {"content": "vztmpl", "volid": "local:vztmpl/ubuntu-16.04-standard_16.04-1_amd64.tar.gz", "format": "tgz", "size": 197123375}, {"content": "iso", "volid": "local:iso/CentOS-7-x86_64-Minimal-1611.iso", "size": 713031680, "format": "iso"}, {"content": "iso", "volid": "local:iso/gparted-live-0.28.1-1-amd64.iso", "format": "iso", "size": 286261248}, {"content": "iso", "volid": "local:iso/ubuntu-16.04.2-server-amd64.iso", "format": "iso", "size": 869269504}, {"content": "iso", "volid": "local:iso/ubuntu-17.04-desktop-amd64.iso", "format": "iso", "size": 1609039872}, {"content": "iso", "volid": "local:iso/Windows_10_x64.iso", "size": 4083853312, "format": "iso"}, {"content": "iso", "volid": "local:iso/Windows_7_AIO.iso", "format": "iso", "size": 4172677120}]}
+```
 
 "Read storage RRD statistics. Returns JSON"
 
-		getNodeStorageRRDData(node,storage)
-		print json.dumps(proxmox.getNodeStorageRRDData('pve', 'local'))
-		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
+Syntax: `getNodeStorageRRD(node,storage)`
+
+Example: `print json.dumps(proxmox.getNodeStorageRRD('pve', 'local'))`
+
+Output:
+
+```
+{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"ds": "property is missing and it is not optional", "timeframe": "property is missing and it is not optional"}, "data": null}
+```
 
 "Read storage RRD statistics. Returns JSON"
 
+Syntax: `getNodeStorageRRDData(node,storage)`
+
+Example: `print json.dumps(proxmox.getNodeStorageRRDData('pve', 'local'))`
+
+Output:
+
+```
+{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
+```
 
 #### POST Methods
 
