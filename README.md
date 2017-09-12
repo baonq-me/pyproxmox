@@ -8,7 +8,7 @@ This readme is edited by me.
 - Fix crash when failed to connect to proxmox server
 - Add example code
 
-## Installation and dependencies
+## 1. Installation and dependencies
 
 1. Install original pyproxmox library and other dependencies
 
@@ -24,7 +24,9 @@ This readme is edited by me.
 	sudo cp pyproxmox/src/pyproxmox.py /usr/local/lib/python2.7/dist-packages/pyproxmox.py
 ```
 
-## Example usage
+## 2. Example usage
+
+### 2.1. Calling pyproxmox
 
 1. Import everything from the module
 
@@ -65,7 +67,7 @@ Links:
 - [Proxmox VE API introduction](https://pve.proxmox.com/wiki/Proxmox_VE_API)
 - [Proxmox VE API description](https://pve.proxmox.com/pve-docs/api-viewer/index.html)
 
-### Methods requiring post_data
+### 2.2. Methods requiring post_data
 
 These methods need to passed a correctly formatted dictionary. For example, if I was to use the createOpenvzContainer for the above example node. I would need to pass the post_data with all the required variables for proxmox.
 
@@ -80,11 +82,11 @@ These methods need to passed a correctly formatted dictionary. For example, if I
 
 For more information on the accepted variables please see https://pve.proxmox.com/pve-docs/api-viewer/index.html
 
-## Current List of Methods
+## 3. Current List of Methods
 
-### GET Methods
+### 3.1. GET Methods
 
-#### Cluster Methods
+#### 3.1.1. Cluster Methods
 
 ##### Get cluster status information. Returns JSON
 
@@ -122,7 +124,7 @@ Output:
 {"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}
 ```
 
-#### Node Methods
+#### 3.1.2. Node Methods
 
 ##### List available networks. Returns JSON
 
@@ -340,7 +342,7 @@ Output:
 {"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"status": "stopped", "node": "pve", "pstart": 1515643, "type": "qmstart", "pid": 23908, "upid": "UPID:pve:00005D64:0017207B:59B6642D:qmstart:101:root@pam:", "user": "root@pam", "starttime": 1505125421, "exitstatus": "OK", "id": "101"}}
 ```
 
-#### Scan
+#### 3.1.3. Scan
 
 ##### Get index of available scan methods, Returns JSON
 
@@ -402,7 +404,7 @@ Output:
 {"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"vendid": "1d6b", "devnum": 1, "product": "EHCI Host Controller", "busnum": 1, "level": 0, "class": 9, "speed": "480", "port": 0, "prodid": "0002", "manufacturer": "Linux 4.10.15-1-pve ehci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "EHCI Host Controller", "busnum": 2, "level": 0, "class": 9, "speed": "480", "port": 0, "prodid": "0002", "manufacturer": "Linux 4.10.15-1-pve ehci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 3, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 4, "level": 0, "class": 9, "speed": "12", "port": 0, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1a2c", "devnum": 2, "product": "USB Keyboard", "busnum": 4, "level": 1, "usbpath": "2", "class": 0, "speed": "1.5", "port": 1, "prodid": "0e24", "manufacturer": "SEM"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 5, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "046b", "devnum": 2, "product": "Virtual Keyboard and Mouse", "busnum": 5, "level": 1, "usbpath": "1", "port": 0, "speed": "12", "class": 0, "prodid": "ff10", "manufacturer": "American Megatrends Inc."}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 6, "level": 0, "class": 9, "speed": "12", "port": 0, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 7, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 8, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}]}
 ```
 
-#### OpenVZ Methods
+#### 3.1.4. OpenVZ Methods
 
 ##### Directory index. Returns JSON
 
@@ -488,7 +490,7 @@ Output:
 {"status": {"reason": "Method 'GET /nodes/pve/openvz/106/rrddata' not implemented", "code": 501, "ok": false}, "data": null}
 ```
 
-#### KVM Methods
+#### 3.1.5. KVM Methods
 
 ##### Directory index. Returns JSON
 
@@ -550,7 +552,7 @@ Output:
 {"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
 ```
 
-##### Storage Methods
+##### 3.1.6. Storage Methods
 
 ##### Get volume attributes. Returns JSON
 
@@ -630,10 +632,10 @@ Output:
 {"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
 ```
 
-#### POST Methods
+#### 3.2. POST Methods
 
 	
-##### OpenVZ Methods
+##### 3.2.1. OpenVZ Methods
 	
 		createOpenvzContainer(node,post_data)
 ##### Create or restore a container. Returns JSON
@@ -657,7 +659,7 @@ Requires a dictionary of tuples formatted [('postname1','data'),('postname2','da
 		migrateOpenvzContainer(node,vmid,target)
 ##### Migrate the container to another node. Creates a new migration task. Returns JSON
 
-##### KVM Methods
+##### 3.2.2. KVM Methods
 
 		createVirtualMachine(node,post_data)
 ##### Create or restore a virtual machine. Returns JSON
@@ -700,14 +702,14 @@ Requires a dictionary of tuples formatted [('postname1','data'),('postname2','da
 		getSnapshotConfigVirtualMachine(node,vmid,snapname)
 ##### Get snapshot config of a virtual machine. Returns JSON
       
-#### DELETE Methods
+#### 3.3. DELETE Methods
     
-##### OPENVZ
+##### 3.3.1. OPENVZ
     
 		deleteOpenvzContainer(node,vmid)
 ##### Deletes the specified openvz container
 
-#### NODE
+#### 3.3.2. NODE
     
 		deleteNodeNetworkConfig(node)
 ##### Revert network configuration changes.
@@ -715,22 +717,22 @@ Requires a dictionary of tuples formatted [('postname1','data'),('postname2','da
 		deleteNodeInterface(node,interface)
 ##### Delete network device configuration
     
-#### KVM
+#### 3.3.3. KVM
     
 		deleteVirtualMachine(node,vmid)
 ##### Destroy the vm (also delete all used/owned volumes).
         
-#### POOLS
+#### 3.3.4. POOLS
 		deletePool(poolid)
 ##### Delete Pool
 
-#### STORAGE
+#### 3.3.5. STORAGE
 		deleteStorageConfiguration(storageid)
 ##### Delete storage configuration
 
-### PUT Methods
+### 3.4. PUT Methods
 
-#### NODE
+#### 3.4.1. NODE
 		setNodeDNSDomain(node,domain)
 ##### Set the nodes DNS search domain
 
@@ -740,11 +742,11 @@ Requires a dictionary of tuples formatted [('postname1','data'),('postname2','da
 		setNodeTimeZone(node,timezone)
 ##### Set the nodes timezone
 
-#### OPENVZ
+#### 3.4.2. OPENVZ
 		setOpenvzContainerOptions(node,vmid,post_data)
 ##### Set openvz virtual machine options.
   
-#### KVM
+#### 3.4.3. KVM
 		setVirtualMachineOptions(node,vmide,post_data)
 ##### Set KVM virtual machine options.
 
@@ -754,10 +756,10 @@ Requires a dictionary of tuples formatted [('postname1','data'),('postname2','da
 		unlinkVirtualMachineDiskImage(node,vmid, post_data)
 ##### Unlink disk images
  
-#### POOLS
+#### 3.4.4. POOLS
 		setPoolData(poolid, post_data)
 ##### Update pool data.
  
-#### STORAGE
+#### 3.4.5. STORAGE
 		updateStorageConfiguration(storageid, post_data)
 ##### Update storage configuration
