@@ -14,42 +14,97 @@ import sys, os
 
 CONFIG_FILE = 'proxmox.conf'
 
+def list(proxmoxapi):
+	getClusterStatus = proxmoxapi.proxmox.getClusterStatus()
+	#print '#Node in cluster: ' + str(len(getClusterStatus['data']))
+	for i in range(0, len(getClusterStatus['data'])):
+		print 'node ' + getClusterStatus['data'][i]['name']
+		if proxmoxapi.args.detail is True:
+			# Storage
+			getNodeStorage = proxmoxapi.proxmox.getNodeStorage(getClusterStatus['data'][i]['name'])
+			for j in range(0, len(getNodeStorage['data'])):
+				total = round(getNodeStorage['data'][j]['total']*1.0 / 1024**3, 2)
+				used = round(getNodeStorage['data'][j]['used']*1.0 / 1024**3, 2)
+				print getClusterStatus['data'][i]['name'] + ' storage ' + getNodeStorage['data'][j]['storage'] + ' ' + str(used) + 'GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
+			
+			# CPU
+			getNodeStatus = proxmoxapi.proxmox.getNodeStatus(getClusterStatus['data'][i]['name'])
+			print getClusterStatus['data'][i]['name'] + ' cpu thread ' + str(getNodeStatus['data']['cpuinfo']['cpus'])
+			print getClusterStatus['data'][i]['name'] + ' cpu loadavg ' + str(getNodeStatus['data']['loadavg'][0]) + ' ' + str(getNodeStatus['data']['loadavg'][1]) + ' ' + str(getNodeStatus['data']['loadavg'][2])
+			
+			# Memory: RAM
+			total = round(getNodeStatus['data']['memory']['total']*1.0 / 1024**3, 2)
+			used = round(getNodeStatus['data']['memory']['used']*1.0 / 1024**3, 2)
+			print getClusterStatus['data'][i]['name'] + ' mem ' + str(used) + ' GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
 
+			# Memory: swap
+			total = round(getNodeStatus['data']['swap']['total']*1.0 / 1024**3, 2)
+			used = round(getNodeStatus['data']['swap']['used']*1.0 / 1024**3, 2)
+			print getClusterStatus['data'][i]['name'] + ' swap ' + str(used) + 'GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
 
-def loadConfig(filename):
-	if os.path.exists(filename) is False:
-		return False
-	with open(filename) as data:
-		conf = json.load(data)
-		return conf
+			# KSM
+			
+def detail(proxmoxapi):
+	None
+
+class ProxmoxCLI():
+	def loadConfig(self, filename):
+		if os.path.exists(filename) is False:
+			return False
+		with open(filename) as data:
+			conf = json.load(data)
+			return conf
+
+	def __init__(self):
+		# Disable warning for SSL verification
+		warnings.filterwarnings("ignore")
+
+		# Check config file
+		config = self.loadConfig(CONFIG_FILE)
+		if config is False:
+			print 'Config file not found !'
+			sys.exit(1)
+
+		connect = prox_auth(config['host'], config['user'], config['password'])
+		if connect.status is False:
+			print 'Error when connect to ' + config['host'] + ' as ' + config['user'] + ': ' + connect.error
+			sys.exit(1)
+		else:
+			self.proxmox = pyproxmox(connect)
+	def aaa(self):
+		print 'bbb'
+	
+	def __call__(self):
+		return self.aaa()
+	
+	def parse_option(self):
+		self.parser = argparse.ArgumentParser(description = 'Proxmox API client')
+		self.parser.add_argument('-l', '--list', action = 'store_true', help='List nodes in cluster')
+		self.parser.add_argument('-d', '--detail', action = 'store_true', help='with -l, display more details')
+		self.parser.parse_args()
+
+		self.args = self.parser.parse_args()
+		self.user_input = {}
+		# Loop to extract names in namespace
+		for arg in self.args.__dict__:
+			if self.args.__dict__[arg] is True:
+				# Call variable functions
+				globals()[arg](self)
+				#print 'Debug: argument ' + arg + ' is selected. Calling function ' + arg + '()'
 
 if __name__ == "__main__":
-	# Disable warning for SSL verification
-	warnings.filterwarnings("ignore")
-
-	# Check config file
-	config = loadConfig(CONFIG_FILE)
-	if config is False:
-		print 'Config file not found !'
-		sys.exit(1)
-
-	connect = prox_auth(config['host'], config['user'], config['password'])
-	if connect.status is False:
-		print 'Could not connect to server ' + config['host'] + ' as ' + config['user']
-		sys.exit(1)
-	else:
-		proxmox = pyproxmox(connect)
-
-	
+	proxmoxcli = ProxmoxCLI()
+	proxmoxcli.parse_option()
 
 
 '''
+warnings.filterwarnings("ignore")
 
 parser = argparse.ArgumentParser()
 parser.parse_args()
 
 # Connect to Proxmox server
-connect = prox_auth('192.168.0.40','root@pam','Admin2355')
+connect = prox_auth('mypve.ddns.net','root@pam','Admin2355')
 proxmox = pyproxmox(connect)
 
 # Get info
@@ -105,7 +160,6 @@ for i in range(0, len(getClusterStatus['data'])):
 		print '\t\tDNS2: ' + getNodeDNS['data']['dns2']
 	if 'dns3' in getNodeDNS['data']:
 		print '\t\tDNS3: ' + getNodeDNS['data']['dns3']
-	
-
-#print json.dumps(proxmox.getNodeStatus('pve'))
 '''
+
+#print json.dumps(proxmox.getNodeStorageRRDData('pve', 'local'))
