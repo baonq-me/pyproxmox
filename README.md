@@ -361,18 +361,42 @@ Output:
 ##### Storage Methods
 
 		getStorageVolumeData(node,storage,volume)
+		print json.dumps(proxmox.getStorageVolumeData('pve', 'local-zfs', ''))
+		print json.dumps(proxmox.getStorageVolumeData('pve', 'local-zfs', 'vm-102-disk-1'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"name": "subvol-105-disk-1", "parent": null, "format": "subvol", "vmid": "105", "content": "images", "volid": "local-zfs:subvol-105-disk-1", "size": 32212254720}, {"name": "subvol-106-disk-1", "parent": null, "format": "subvol", "vmid": "106", "content": "images", "volid": "local-zfs:subvol-106-disk-1", "size": 32212254720}, {"name": "vm-100-disk-1", "parent": null, "format": "raw", "vmid": "100", "content": "images", "volid": "local-zfs:vm-100-disk-1", "size": 32212254720}, {"name": "vm-101-disk-1", "parent": null, "format": "raw", "vmid": "101", "content": "images", "volid": "local-zfs:vm-101-disk-1", "size": 64424509440}, {"name": "vm-102-disk-1", "parent": null, "format": "raw", "vmid": "102", "content": "images", "volid": "local-zfs:vm-102-disk-1", "size": 64424509440}, {"name": "vm-103-disk-1", "parent": null, "format": "raw", "vmid": "103", "content": "images", "volid": "local-zfs:vm-103-disk-1", "size": 42949672960}, {"name": "vm-104-disk-1", "parent": null, "format": "raw", "vmid": "104", "content": "images", "volid": "local-zfs:vm-104-disk-1", "size": 32212254720}]}
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"path": "/dev/zvol/rpool/data/vm-102-disk-1", "size": 64424509440, "used": 0, "format": "raw"}}
+
+
 "Get volume attributes. Returns JSON"
 
 		getStorageConfig(storage)
+		print json.dumps(proxmox.getStorageConfig('local-zfs'))
+		print json.dumps(proxmox.getStorageConfig('local'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"storage": "local-zfs", "content": "images,rootdir", "pool": "rpool/data", "sparse": 1, "type": "zfspool", "digest": "0e7b92ec3d27fdaae928f801208da4b1001eeaa8"}}
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"content": "vztmpl,iso,backup", "type": "dir", "storage": "local", "digest": "0e7b92ec3d27fdaae928f801208da4b1001eeaa8", "path": "/var/lib/vz"}}
+
+
 "Read storage config. Returns JSON"
     
 		getNodeStorageContent(node,storage)
+		print json.dumps(proxmox.getNodeStorageContent('pve', 'local-zfs'))
+		print json.dumps(proxmox.getNodeStorageContent('pve', 'local'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"name": "subvol-105-disk-1", "parent": null, "format": "subvol", "vmid": "105", "content": "images", "volid": "local-zfs:subvol-105-disk-1", "size": 32212254720}, {"name": "subvol-106-disk-1", "parent": null, "format": "subvol", "vmid": "106", "content": "images", "volid": "local-zfs:subvol-106-disk-1", "size": 32212254720}, {"name": "vm-100-disk-1", "parent": null, "format": "raw", "vmid": "100", "content": "images", "volid": "local-zfs:vm-100-disk-1", "size": 32212254720}, {"name": "vm-101-disk-1", "parent": null, "format": "raw", "vmid": "101", "content": "images", "volid": "local-zfs:vm-101-disk-1", "size": 64424509440}, {"name": "vm-102-disk-1", "parent": null, "format": "raw", "vmid": "102", "content": "images", "volid": "local-zfs:vm-102-disk-1", "size": 64424509440}, {"name": "vm-103-disk-1", "parent": null, "format": "raw", "vmid": "103", "content": "images", "volid": "local-zfs:vm-103-disk-1", "size": 42949672960}, {"name": "vm-104-disk-1", "parent": null, "format": "raw", "vmid": "104", "content": "images", "volid": "local-zfs:vm-104-disk-1", "size": 32212254720}]}
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"content": "vztmpl", "volid": "local:vztmpl/centos-7-default_20170504_amd64.tar.xz", "format": "txz", "size": 68497932}, {"content": "vztmpl", "volid": "local:vztmpl/ubuntu-16.04-standard_16.04-1_amd64.tar.gz", "format": "tgz", "size": 197123375}, {"content": "iso", "volid": "local:iso/CentOS-7-x86_64-Minimal-1611.iso", "size": 713031680, "format": "iso"}, {"content": "iso", "volid": "local:iso/gparted-live-0.28.1-1-amd64.iso", "format": "iso", "size": 286261248}, {"content": "iso", "volid": "local:iso/ubuntu-16.04.2-server-amd64.iso", "format": "iso", "size": 869269504}, {"content": "iso", "volid": "local:iso/ubuntu-17.04-desktop-amd64.iso", "format": "iso", "size": 1609039872}, {"content": "iso", "volid": "local:iso/Windows_10_x64.iso", "size": 4083853312, "format": "iso"}, {"content": "iso", "volid": "local:iso/Windows_7_AIO.iso", "format": "iso", "size": 4172677120}]}
+
+
 "List storage content. Returns JSON"
 
 		getNodeStorageRRD(node,storage)
+		print json.dumps(proxmox.getNodeStorageRRD('pve', 'local'))
+		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"ds": "property is missing and it is not optional", "timeframe": "property is missing and it is not optional"}, "data": null}
+
 "Read storage RRD statistics. Returns JSON"
 
 		getNodeStorageRRDData(node,storage)
+		print json.dumps(proxmox.getNodeStorageRRDData('pve', 'local'))
+		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
+
 "Read storage RRD statistics. Returns JSON"
 
 
