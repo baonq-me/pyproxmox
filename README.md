@@ -6,19 +6,25 @@ pyproxmox
 This readme is edited by me.
 
 ### Installation and dependency
-    
+    
+```
 	sudo pip install pyproxmox requests
+```
 
 ###### Example usage
 
 1. Import everything from the module
 
-	`from pyproxmox import *`
+```
+	from pyproxmox import *`
+```
 
 2. Create an instance of the prox_auth class by passing in the
 url or ip of a server in the cluster, username and password
 
-	`connect = prox_auth('mypve.baonq.me', 'root@pam', '123456')`
+```
+	connect = prox_auth('mypve.baonq.me', 'root@pam', '123456')`
+```
 
 In case of failed connection, `connect.status` will be `False`. Error message can be extracted via `connect.error`
 
@@ -30,7 +36,9 @@ In case of failed connection, `connect.status` will be `False`. Error message ca
 
 3. Create and instance of the pyproxmox class using the auth object as a parameter
 
-	`proxmox = pyproxmox(connect)`
+```
+	proxmox = pyproxmox(connect)`
+```
 
 4. Run the pre defined methods of the pyproxmox class
 
@@ -49,12 +57,14 @@ These methods need to passed a correctly formatted dictionary.
 for example, if I was to use the createOpenvzContainer for the above example node
 I would need to pass the post_data with all the required variables for proxmox.
 
+```
 	post_data = {'ostemplate':'local:vztmpl/debian-6.0-standard_6.0-4_amd64.tar.gz',
 				'vmid':'9001','cpus':'4','description':'test container',
 				'disk':'10','hostname':'test.example.org','memory':'1024',
 				'password':'testPassword','swap':'1024'}
 	
 	proxmox.createOpenvzContainer('pve',post_data)
+```
 
 For more information on the accepted variables please see http//pve.proxmox.com/pve2-api-doc/
 
@@ -65,10 +75,9 @@ For more information on the accepted variables please see http//pve.proxmox.com/
 ##### Cluster Methods
 
 Syntax: `getClusterStatus()`
-Example: 
-
-	print json.dumps(getClusterStatus())
-	{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}
+Example: `print json.dumps(getClusterStatus())`
+Output:
+`{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}`
 
 "Get cluster status information. Returns JSON"
 
