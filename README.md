@@ -80,7 +80,9 @@ Example: `print json.dumps(getClusterStatus())`
 
 Output:
 
-```{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}```
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}
+```
 
 "List vzdump backup schedule. Returns JSON"
 
@@ -90,7 +92,9 @@ Example: `print json.dumps(getClusterBackupSchedule())`
 
 Output:
 
-```{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}```
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}
+```
 
 "Get next VM ID (ID that is free and ready to assign to VM) of cluster. Returns JSON"
 
@@ -100,7 +104,9 @@ Example: `print json.dumps(getClusterVmNextId())`
 
 Output:
 
-```{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}```
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}
+```
 
 ##### Node Methods
 
@@ -112,7 +118,9 @@ Example: `print json.dumps(getNodeNetworks('pve'))`
 		
 Output:
 
-```{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"method6": "manual", "iface": "vmbr0", "families": ["inet"], "bridge_fd": "0", "method": "static", "priority": 5, "netmask": "255.255.255.0", "bridge_stp": "off", "bridge_ports": "enp1s0f0", "address": "192.168.0.40", "active": 1, "autostart": 1, "type": "bridge", "gateway": "192.168.0.1"}, {"method6": "manual", "iface": "enp1s0f1", "families": ["inet"], "exists": 1, "priority": 4, "type": "eth", "method": "manual"}, {"method6": "manual", "iface": "enp1s0f0", "families": ["inet"], "exists": 1, "priority": 3, "active": 1, "type": "eth", "method": "manual"}]}```
+```
+{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"method6": "manual", "iface": "vmbr0", "families": ["inet"], "bridge_fd": "0", "method": "static", "priority": 5, "netmask": "255.255.255.0", "bridge_stp": "off", "bridge_ports": "enp1s0f0", "address": "192.168.0.40", "active": 1, "autostart": 1, "type": "bridge", "gateway": "192.168.0.1"}, {"method6": "manual", "iface": "enp1s0f1", "families": ["inet"], "exists": 1, "priority": 4, "type": "eth", "method": "manual"}, {"method6": "manual", "iface": "enp1s0f0", "families": ["inet"], "exists": 1, "priority": 3, "active": 1, "type": "eth", "method": "manual"}]}
+```
 
 "Read network device configuration. Returns JSON"
 
@@ -121,8 +129,8 @@ Syntax: `getNodeInterface(node,interface)`
 Example: 
 
 ```
-print json.dumps(getNodeInterface('pve', 'vmbr0'))`
-print json.dumps(getNodeInterface('pve', 'enp1s0f0'))`
+print json.dumps(getNodeInterface('pve', 'vmbr0'))
+print json.dumps(getNodeInterface('pve', 'enp1s0f0'))
 ```
 
 Output:
@@ -132,25 +140,41 @@ Output:
 {"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"method6": "manual", "families": ["inet"], "exists": 1, "priority": 4, "type": "eth", "method": "manual"}}
 ```
 
-
-
-		getNodeContainerIndex(node)
-		
-		{"status": {"reason": "Method 'GET /nodes/pve/openvz' not implemented", "code": 501, "ok": false}, "data": null}
-
 "OpenVZ container index (per node). Returns JSON"
+
+Syntax: `getNodeContainerIndex(node)`
+
+Example: `print json.dumps(getNodeInterface('pve'))`
+
+Output:
+
+```
+{"status": {"reason": "Method 'GET /nodes/pve/openvz' not implemented", "code": 501, "ok": false}, "data": null}
+```
+
+ "Virtual machine index (per node). Returns JSON"
  
-		getNodeVirtualIndex(node)
-		
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"status": "stopped", "uptime": 0, "name": "win10.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 101, "netin": 0, "cpus": 4, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 64424509440, "maxmem": 4294967296}, {"status": "stopped", "uptime": 0, "name": "devstack.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 104, "cpus": 2, "netin": 0, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 32212254720, "maxmem": 1073741824}, {"status": "stopped", "uptime": 0, "name": "win7.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 102, "cpus": 2, "netin": 0, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 64424509440, "maxmem": 2147483648}, {"status": "stopped", "uptime": 0, "name": "desktop.ubuntu.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 103, "netin": 0, "cpus": 2, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 42949672960, "maxmem": 2147483648}, {"status": "stopped", "uptime": 0, "name": "template.ubuntu.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 100, "netin": 0, "cpus": 2, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 32212254720, "maxmem": 1073741824}]}
-
-"Virtual machine index (per node). Returns JSON"
-
-		getNodeServiceList(node)
-		
-		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"state": "running", "name": "pve-ha-lrm", "service": "pve-ha-lrm", "desc": "PVE Local HA Ressource Manager Daemon"}, {"state": "running", "name": "spiceproxy", "service": "spiceproxy", "desc": "PVE SPICE Proxy Server"}, {"state": "running", "name": "syslog", "service": "syslog", "desc": "System Logging Service"}, {"state": "running", "name": "systemd-timesyncd", "service": "systemd-timesyncd", "desc": "Network Time Synchronization"}, {"state": "running", "name": "ksmtuned", "service": "ksmtuned", "desc": "Kernel Samepage Merging (KSM) Tuning Daemon"}, {"state": "running", "name": "sshd", "service": "sshd", "desc": "OpenBSD Secure Shell server"}, {"state": "running", "name": "pve-ha-crm", "service": "pve-ha-crm", "desc": "PVE Cluster Ressource Manager Daemon"}, {"state": "running", "name": "cron", "service": "cron", "desc": "Regular background program processing daemon"}, {"state": "running", "name": "pve-firewall", "service": "pve-firewall", "desc": "Proxmox VE firewall"}, {"state": "running", "name": "pveproxy", "service": "pveproxy", "desc": "PVE API Proxy Server"}, {"state": "dead", "name": "corosync", "service": "corosync", "desc": "Corosync Cluster Engine"}, {"state": "running", "name": "pve-cluster", "service": "pve-cluster", "desc": "The Proxmox VE cluster filesystem"}, {"state": "running", "name": "pvestatd", "service": "pvestatd", "desc": "PVE Status Daemon"}, {"state": "running", "name": "pvefw-logger", "service": "pvefw-logger", "desc": "Proxmox VE firewall logger"}, {"state": "running", "name": "postfix", "service": "postfix", "desc": "Postfix Mail Transport Agent (instance -)"}, {"state": "running", "name": "pvedaemon", "service": "pvedaemon", "desc": "PVE API Daemon"}]}
+ Syntax: `getNodeVirtualIndex(node)`
+ 
+ Example: `print json.dumps(getNodeVirtualIndex('pve'))`
+ 
+ Output:
+ 
+ ```
+ {"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"status": "stopped", "uptime": 0, "name": "win10.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 101, "netin": 0, "cpus": 4, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 64424509440, "maxmem": 4294967296}, {"status": "stopped", "uptime": 0, "name": "devstack.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 104, "cpus": 2, "netin": 0, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 32212254720, "maxmem": 1073741824}, {"status": "stopped", "uptime": 0, "name": "win7.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 102, "cpus": 2, "netin": 0, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 64424509440, "maxmem": 2147483648}, {"status": "stopped", "uptime": 0, "name": "desktop.ubuntu.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 103, "netin": 0, "cpus": 2, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 42949672960, "maxmem": 2147483648}, {"status": "stopped", "uptime": 0, "name": "template.ubuntu.baonq.me", "diskread": 0, "mem": 0, "pid": null, "vmid": 100, "netin": 0, "cpus": 2, "diskwrite": 0, "template": "", "netout": 0, "disk": 0, "cpu": 0, "maxdisk": 32212254720, "maxmem": 1073741824}]}
+```
 
 "Service list. Returns JSON"
+
+Syntax: `getNodeServiceList(node)`
+	
+Example: `print json.dumps(getNodeVirtualIndex('pve'))`
+		
+Output:
+
+```{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"state": "running", "name": "pve-ha-lrm", "service": "pve-ha-lrm", "desc": "PVE Local HA Ressource Manager Daemon"}, {"state": "running", "name": "spiceproxy", "service": "spiceproxy", "desc": "PVE SPICE Proxy Server"}, {"state": "running", "name": "syslog", "service": "syslog", "desc": "System Logging Service"}, {"state": "running", "name": "systemd-timesyncd", "service": "systemd-timesyncd", "desc": "Network Time Synchronization"}, {"state": "running", "name": "ksmtuned", "service": "ksmtuned", "desc": "Kernel Samepage Merging (KSM) Tuning Daemon"}, {"state": "running", "name": "sshd", "service": "sshd", "desc": "OpenBSD Secure Shell server"}, {"state": "running", "name": "pve-ha-crm", "service": "pve-ha-crm", "desc": "PVE Cluster Ressource Manager Daemon"}, {"state": "running", "name": "cron", "service": "cron", "desc": "Regular background program processing daemon"}, {"state": "running", "name": "pve-firewall", "service": "pve-firewall", "desc": "Proxmox VE firewall"}, {"state": "running", "name": "pveproxy", "service": "pveproxy", "desc": "PVE API Proxy Server"}, {"state": "dead", "name": "corosync", "service": "corosync", "desc": "Corosync Cluster Engine"}, {"state": "running", "name": "pve-cluster", "service": "pve-cluster", "desc": "The Proxmox VE cluster filesystem"}, {"state": "running", "name": "pvestatd", "service": "pvestatd", "desc": "PVE Status Daemon"}, {"state": "running", "name": "pvefw-logger", "service": "pvefw-logger", "desc": "Proxmox VE firewall logger"}, {"state": "running", "name": "postfix", "service": "postfix", "desc": "Postfix Mail Transport Agent (instance -)"}, {"state": "running", "name": "pvedaemon", "service": "pvedaemon", "desc": "PVE API Daemon"}]}
+```
+
    
 		getNodeServiceState(node,service)
 		
