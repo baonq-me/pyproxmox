@@ -7,33 +7,37 @@ This readme is edited by me.
 
 ### Installation and dependency
     
-    sudo pip install pyproxmox requests
+	sudo pip install pyproxmox requests
 
 ###### Example usage
 
 1. Import everything from the module
 
-		from pyproxmox import *
+	`python from pyproxmox import *
 
 2. Create an instance of the prox_auth class by passing in the
 url or ip of a server in the cluster, username and password
 
-		connect = prox_auth('mypve.baonq.me', 'root@pam', '123456')
+	connect = prox_auth('mypve.baonq.me', 'root@pam', '123456')
 
 In case of failed connection, `connect.status` will be `False`. Error message can be extracted via `connect.error`
-		
-		if connect.status is False:
-			print 'Error when connect to ' + 'mypve.baonq.me' + ' as ' + 'root@pam' + ': ' + connect.error
-			sys.exit(1)
+
+```
+	if connect.status is False:
+		print 'Error when connect to ' + 'mypve.baonq.me' + ' as ' + 'root@pam' + ': ' + connect.error
+		sys.exit(1)
+```
 
 3. Create and instance of the pyproxmox class using the auth object as a parameter
 
-		proxmox = pyproxmox(connect)
+	`proxmox = pyproxmox(connect)`
 
 4. Run the pre defined methods of the pyproxmox class
 
-		status = proxmox.getClusterStatus()
-		print json.dumps(status)
+```
+	status = proxmox.getClusterStatus()
+	print json.dumps(status)
+```
 
 NOTE They all return data, usually in JSON format.
 
@@ -60,31 +64,27 @@ For more information on the accepted variables please see http//pve.proxmox.com/
 
 ##### Cluster Methods
 
-Syntax: 
-`getClusterStatus()`
-
+Syntax: `getClusterStatus()`
 Example: 
 
-			print json.dumps(getClusterStatus())
-			{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}
+	print json.dumps(getClusterStatus())
+	{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}
 
 "Get cluster status information. Returns JSON"
 
 Syntax: `getClusterBackupSchedule()`
-		
 Example:
 
-			print json.dumps(getClusterBackupSchedule())
-			{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}
+	print json.dumps(getClusterBackupSchedule())
+	{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}
 
 "List vzdump backup schedule. Returns JSON"
 
-Syntax: `getClusterVmNextId()`
-		
+Syntax: `getClusterVmNextId()`	
 Example:
 
-			print json.dumps(getClusterVmNextId())
-			{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}
+	print json.dumps(getClusterVmNextId())
+	{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "105"}
 "Get next VM ID (ID that is free and ready to assign to VM) of cluster. Returns JSON"
 
 ##### Node Methods
