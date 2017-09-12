@@ -215,80 +215,147 @@ Output:
 "Read system log. Returns JSON"
 
 		getNodeRRD(node)
+		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"ds": "property is missing and it is not optional", "timeframe": "property is missing and it is not optional"}, "data": null}
+
 "Read node RRD statistics. Returns PNG"
 
 		getNodeRRDData(node)
+		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
+
 "Read node RRD statistics. Returns RRD"
 
 		getNodeBeans(node)
+		{"status": {"reason": "Method 'GET /nodes/pve/ubfailcnt' not implemented", "code": 501, "ok": false}, "data": null}
+
 "Get user_beancounters failcnt for all active containers. Returns JSON"
 
 		getNodeTaskByUPID(node,upid)
+		print json.dumps(proxmox.getNodeTaskLogByUPID('pve', 'UPID:pve:00005D64:0017207B:59B6642D:qmstart:101:root@pam:'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"name": "log"}, {"name": "status"}]}
+
 "Get tasks by UPID. Returns JSON"
 
 		getNodeTaskLogByUPID(node,upid)
+		print json.dumps(proxmox.getNodeTaskLogByUPID('pve', 'UPID:pve:00005D64:0017207B:59B6642D:qmstart:101:root@pam:'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "total": 1, "data": [{"t": "TASK OK", "n": 1}]}
+
 "Read task log. Returns JSON"
 
 		getNodeTaskStatusByUPID(node,upid)
+		print json.dumps(proxmox.getNodeTaskStatusByUPID('pve', 'UPID:pve:00005D64:0017207B:59B6642D:qmstart:101:root@pam:'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"status": "stopped", "node": "pve", "pstart": 1515643, "type": "qmstart", "pid": 23908, "upid": "UPID:pve:00005D64:0017207B:59B6642D:qmstart:101:root@pam:", "user": "root@pam", "starttime": 1505125421, "exitstatus": "OK", "id": "101"}}
+
 "Read task status. Returns JSON"
 
 ##### Scan
 
 		getNodeScanMethods(node)
+		print json.dumps(proxmox.getNodeScanMethods('pve'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"method": "lvm"}, {"method": "iscsi"}, {"method": "nfs"}, {"method": "glusterfs"}, {"method": "usb"}, {"method": "zfs"}]}
+
 "Get index of available scan methods, Returns JSON"
 
 		getRemoteiSCSI(node)
+		print json.dumps(proxmox.getRemoteiSCSI('pve'))
+		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"portal": "property is missing and it is not optional"}, "data": null}
+
 "Scan remote iSCSI server."
 
 		getNodeLVMGroups(node)
+		print json.dumps(proxmox.getNodeLVMGroups('pve'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}
+
 "Scan local LVM groups"
 
 		getRemoteNFS(node)
+		print json.dumps(proxmox.getRemoteNFS('pve'))
+		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"server": "property is missing and it is not optional"}, "data": null}
+
 "Scan remote NFS server"
 
 		getNodeUSB(node)
+		print json.dumps(proxmox.getNodeUSB('pve'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"vendid": "1d6b", "devnum": 1, "product": "EHCI Host Controller", "busnum": 1, "level": 0, "class": 9, "speed": "480", "port": 0, "prodid": "0002", "manufacturer": "Linux 4.10.15-1-pve ehci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "EHCI Host Controller", "busnum": 2, "level": 0, "class": 9, "speed": "480", "port": 0, "prodid": "0002", "manufacturer": "Linux 4.10.15-1-pve ehci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 3, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 4, "level": 0, "class": 9, "speed": "12", "port": 0, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1a2c", "devnum": 2, "product": "USB Keyboard", "busnum": 4, "level": 1, "usbpath": "2", "class": 0, "speed": "1.5", "port": 1, "prodid": "0e24", "manufacturer": "SEM"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 5, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "046b", "devnum": 2, "product": "Virtual Keyboard and Mouse", "busnum": 5, "level": 1, "usbpath": "1", "port": 0, "speed": "12", "class": 0, "prodid": "ff10", "manufacturer": "American Megatrends Inc."}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 6, "level": 0, "class": 9, "speed": "12", "port": 0, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 7, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}, {"vendid": "1d6b", "devnum": 1, "product": "UHCI Host Controller", "busnum": 8, "level": 0, "port": 0, "speed": "12", "class": 9, "prodid": "0001", "manufacturer": "Linux 4.10.15-1-pve uhci_hcd"}]}
+
 "List local USB devices"
 
     
 ##### OpenVZ Methods
 
 		getContainerIndex(node,vmid)
+		print json.dumps(proxmox.getContainerIndex('pve', '106'))
+		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106' not implemented", "code": 501, "ok": false}, "data": null}
+
 "Directory index. Returns JSON"
 
 		getContainerStatus(node,vmid)
+		print json.dumps(proxmox.getContainerStatus('pve', '106'))
+		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/status/current' not implemented", "code": 501, "ok": false}, "data": null}
+
 "Get virtual machine status. Returns JSON"
 
 		getContainerBeans(node,vmid)
+		print json.dumps(proxmox.getContainerBeans('pve', '106'))
+		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/status/ubc' not implemented", "code": 501, "ok": false}, "data": null}
+
 "Get container user_beancounters. Returns JSON"
 
 		getContainerConfig(node,vmid)
+		print json.dumps(proxmox.getContainerConfig('pve', '106'))
+		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/config' not implemented", "code": 501, "ok": false}, "data": null}
+
 "Get container configuration. Returns JSON"
 
 		getContainerInitLog(node,vmid)
+		print json.dumps(proxmox.getContainerInitLog('pve', '106'))
+		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/initlog' not implemented", "code": 501, "ok": false}, "data": null}
+
+		
 "Read init log. Returns JSON"
 
 		getContainerRRD(node,vmid)
+		print json.dumps(proxmox.getContainerRRD('pve', '106'))
+		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/rrd' not implemented", "code": 501, "ok": false}, "data": null}
+
 "Read VM RRD statistics. Returns PNG"
 
 
 		def getContainerRRDData(node,vmid)
+		print json.dumps(proxmox.getContainerRRDData('pve', '106'))
+		{"status": {"reason": "Method 'GET /nodes/pve/openvz/106/rrddata' not implemented", "code": 501, "ok": false}, "data": null}
+
 "Read VM RRD statistics. Returns RRD"
 
 ##### KVM Methods
 
 		getVirtualIndex(node,vmid)
+		print json.dumps(proxmox.getVirtualIndex('pve', '106'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"subdir": "config"}, {"subdir": "pending"}, {"subdir": "status"}, {"subdir": "unlink"}, {"subdir": "vncproxy"}, {"subdir": "migrate"}, {"subdir": "resize"}, {"subdir": "move"}, {"subdir": "rrd"}, {"subdir": "rrddata"}, {"subdir": "monitor"}, {"subdir": "agent"}, {"subdir": "snapshot"}, {"subdir": "spiceproxy"}, {"subdir": "sendkey"}, {"subdir": "firewall"}]}
+
 "Directory index. Returns JSON"
 
 		getVirtualStatus(node,vmid)
+		print json.dumps(proxmox.getVirtualStatus('pve', '103'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"status": "stopped", "uptime": 0, "ha": {"managed": 0}, "name": "desktop.ubuntu.baonq.me", "diskread": 0, "mem": 0, "pid": null, "cpus": 2, "netin": 0, "diskwrite": 0, "template": "", "netout": 0, "qmpstatus": "stopped", "disk": 0, "cpu": 0, "maxdisk": 42949672960, "maxmem": 2147483648}}
+
 "Get virtual machine status. Returns JSON"
 
 		getVirtualConfig(node,vmid)
+		print json.dumps(proxmox.getVirtualConfig('pve', '103'))
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": {"smbios1": "uuid=51700618-8ace-4729-958f-2c8d8fe7e505", "scsihw": "virtio-scsi-pci", "balloon": 0, "cpu": "host", "scsi0": "local-zfs:vm-103-disk-1,size=40G", "numa": 0, "memory": 2048, "ostype": "l26", "cores": 1, "net0": "virtio=A2:5F:E6:53:92:4C,bridge=vmbr0", "bootdisk": "scsi0", "sockets": 2, "digest": "8c91b8be2101bdfdfd0e583578ffb99af6966ae4", "name": "desktop.ubuntu.baonq.me"}}
+
 "Get virtual machine configuration. Returns JSON"
 
 		getVirtualRRD(node,vmid)
+		print json.dumps(proxmox.getVirtualRRD('pve', '103'))
+		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"ds": "property is missing and it is not optional", "timeframe": "property is missing and it is not optional"}, "data": null}
+
 "Read VM RRD statistics. Returns JSON"
 
 		getVirtualRRDData(node,vmid)
+		print json.dumps(proxmox.getVirtualRRDData('pve', '103'))
+		{"status": {"reason": "Parameter verification failed.", "code": 400, "ok": false}, "errors": {"timeframe": "property is missing and it is not optional"}, "data": null}
+
 "Read VM RRD statistics. Returns JSON"
 
 ##### Storage Methods
