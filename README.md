@@ -6,11 +6,9 @@ pyproxmox
 This readme is edited by me.
 
 ### Installation and dependency
-    
 ```
 	sudo pip install pyproxmox requests
 ```
-
 ###### Example usage
 
 1. Import everything from the module
@@ -74,20 +72,25 @@ For more information on the accepted variables please see http//pve.proxmox.com/
 
 ##### Cluster Methods
 
+1. Get cluster status information. Returns JSON
+
 Syntax: `getClusterStatus()`
+
 Example: `print json.dumps(getClusterStatus())`
+
 Output:
 `{"status": {"reason": "OK", "code": 200, "ok": true}, "data": [{"ip": "192.168.0.40", "name": "pve", "level": "", "type": "node", "nodeid": 0, "online": 1, "local": 1, "id": "node/pve"}]}`
 
-"Get cluster status information. Returns JSON"
+2. List vzdump backup schedule. Returns JSON
 
 Syntax: `getClusterBackupSchedule()`
-Example:
 
-	print json.dumps(getClusterBackupSchedule())
-	{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}
+Example: `print json.dumps(getClusterBackupSchedule())`
 
-"List vzdump backup schedule. Returns JSON"
+Output:
+`{"status": {"reason": "OK", "code": 200, "ok": true}, "data": []}`
+
+
 
 Syntax: `getClusterVmNextId()`	
 Example:
