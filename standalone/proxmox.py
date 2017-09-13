@@ -14,36 +14,10 @@ import sys, os
 
 CONFIG_FILE = 'proxmox.conf'
 
-def list(proxmoxapi):
-	getClusterStatus = proxmoxapi.proxmox.getClusterStatus()
-	#print '#Node in cluster: ' + str(len(getClusterStatus['data']))
-	for i in range(0, len(getClusterStatus['data'])):
-		print 'node ' + getClusterStatus['data'][i]['name']
-		if proxmoxapi.args.detail is True:
-			# Storage
-			getNodeStorage = proxmoxapi.proxmox.getNodeStorage(getClusterStatus['data'][i]['name'])
-			for j in range(0, len(getNodeStorage['data'])):
-				total = round(getNodeStorage['data'][j]['total']*1.0 / 1024**3, 2)
-				used = round(getNodeStorage['data'][j]['used']*1.0 / 1024**3, 2)
-				print getClusterStatus['data'][i]['name'] + ' storage ' + getNodeStorage['data'][j]['storage'] + ' ' + str(used) + 'GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
-			
-			# CPU
-			getNodeStatus = proxmoxapi.proxmox.getNodeStatus(getClusterStatus['data'][i]['name'])
-			print getClusterStatus['data'][i]['name'] + ' cpu thread ' + str(getNodeStatus['data']['cpuinfo']['cpus'])
-			print getClusterStatus['data'][i]['name'] + ' cpu loadavg ' + str(getNodeStatus['data']['loadavg'][0]) + ' ' + str(getNodeStatus['data']['loadavg'][1]) + ' ' + str(getNodeStatus['data']['loadavg'][2])
-			
-			# Memory: RAM
-			total = round(getNodeStatus['data']['memory']['total']*1.0 / 1024**3, 2)
-			used = round(getNodeStatus['data']['memory']['used']*1.0 / 1024**3, 2)
-			print getClusterStatus['data'][i]['name'] + ' mem ' + str(used) + ' GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
+def formatData(bytes, unit, decimals):
+	units = {'KB': 1, 'MB': 2, 'GB': 3}
+	return round(bytes*1.0 / 1024**units[unit], decimals)
 
-			# Memory: swap
-			total = round(getNodeStatus['data']['swap']['total']*1.0 / 1024**3, 2)
-			used = round(getNodeStatus['data']['swap']['used']*1.0 / 1024**3, 2)
-			print getClusterStatus['data'][i]['name'] + ' swap ' + str(used) + 'GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
-
-			# KSM
-			
 def detail(proxmoxapi):
 	None
 
@@ -79,18 +53,63 @@ class ProxmoxCLI():
 	
 	def parse_option(self):
 		self.parser = argparse.ArgumentParser(description = 'Proxmox API client')
-		self.parser.add_argument('-l', '--list', action = 'store_true', help='List nodes in cluster')
-		self.parser.add_argument('-d', '--detail', action = 'store_true', help='with -l, display more details')
+		self.parser.add_argument('-l', '--list', nargs = '*', help='List nodes in cluster')
+		self.parser.add_argument('-d', '--detail', nargs = '*', help='with -l, display more details')
 		self.parser.parse_args()
 
 		self.args = self.parser.parse_args()
-		self.user_input = {}
 		# Loop to extract names in namespace
-		for arg in self.args.__dict__:
-			if self.args.__dict__[arg] is True:
-				# Call variable functions
-				globals()[arg](self)
-				#print 'Debug: argument ' + arg + ' is selected. Calling function ' + arg + '()'
+		#print '[DEBUG] ' + str(self.args)
+		#for arg in self.args.__dict__:
+		#	if self.args.__dict__[arg] is True:
+		#		# Call variable functions
+		if self.args.list is not None:
+			getClusterStatus = self.proxmox.getClusterStatus()
+			#print '#Node in cluster: ' + str(len(getClusterStatus['data']))
+			if self.args.list is not None:
+				for i in range(0, len(getClusterStatus['data'])):
+					if len(self.args.list) == 0 or getClusterStatus['data'][i]['name'] in self.args.list:
+						print getClusterStatus['data'][i]['name'] + ' ' + getClusterStatus['data'][i]['ip'] + ' ' + ('online' if getClusterStatus['data'][i]['online'] == 1 else 'offline')
+
+					if self.args.detail is not None:
+						# Storage
+						if len(self.args.detail) == 0 or 'storage' in self.args.detail:
+							getNodeStorage = self.proxmox.getNodeStorage(getClusterStatus['data'][i]['name'])
+							for j in range(0, len(getNodeStorage['data'])):
+								total = formatData(getNodeStorage['data'][j]['total'], 'GB', 2)
+								used = formatData(getNodeStorage['data'][j]['used'], 'GB', 2)
+								print getClusterStatus['data'][i]['name'] + ' storage ' + getNodeStorage['data'][j]['storage'] + ' ' + str(used) + 'GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
+					
+						# CPU
+						if len(self.args.detail) == 0 or 'cpu' in self.args.detail:
+							getNodeStatus = self.proxmox.getNodeStatus(getClusterStatus['data'][i]['name'])
+							print getClusterStatus['data'][i]['name'] + ' cpu thread ' + str(getNodeStatus['data']['cpuinfo']['cpus'])
+							print getClusterStatus['data'][i]['name'] + ' cpu loadavg ' + str(getNodeStatus['data']['loadavg'][0]) + ' ' + str(getNodeStatus['data']['loadavg'][1]) + ' ' + str(getNodeStatus['data']['loadavg'][2])
+						
+						# Memory
+						if len(self.args.detail) == 0 or 'memory' in self.args.detail:
+							# RAM
+							getNodeStatus = self.proxmox.getNodeStatus(getClusterStatus['data'][i]['name'])
+							total = formatData(getNodeStatus['data']['memory']['total'], 'GB', 2)
+							used = formatData(getNodeStatus['data']['memory']['used'], 'GB', 2)
+							print getClusterStatus['data'][i]['name'] + ' mem ' + str(used) + ' GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
+
+							# Swap
+							total = formatData(getNodeStatus['data']['swap']['total'], 'GB', 2)
+							used = formatData(getNodeStatus['data']['swap']['used'], 'GB', 2)
+							print getClusterStatus['data'][i]['name'] + ' swap ' + str(used) + 'GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%'
+
+						# CPU
+						if len(self.args.detail) == 0 or 'net' in self.args.detail:
+							getNodeVirtualIndex = self.proxmox.getNodeVirtualIndex(getClusterStatus['data'][i]['name'])
+							netin = 0
+							netout = 0
+							for instance in getNodeVirtualIndex['data']:
+								if instance['uptime'] != 0:
+									print getClusterStatus['data'][i]['name'] + ' net vmid ' + str(instance['vmid']) + ' ' + str(formatData(instance['netin'], 'MB', 2)) + 'MB ' + str(formatData(instance['netout'], 'MB', 2)) + 'MB'
+									netin = netin + instance['netin']
+									netout += instance['netout']
+							print getClusterStatus['data'][i]['name'] + ' net ' + str(formatData(netin, 'GB', 3)) + 'GB ' + str(formatData(netout, 'GB', 3)) + 'GB'
 
 if __name__ == "__main__":
 	proxmoxcli = ProxmoxCLI()
