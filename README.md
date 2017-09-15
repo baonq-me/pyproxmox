@@ -666,6 +666,8 @@ Requires a dictionary of tuples formatted [('postname1','data'),('postname2','da
 Requires a dictionary of tuples formatted [('postname1','data'),('postname2','data')]
 		
 		cloneVirtualMachine(node,vmid,post_data)
+		{"status": {"reason": "OK", "code": 200, "ok": true}, "data": "UPID:pve:00006762:008628C8:59BB8259:qmclone:100:root@pam:"}
+
 ##### Create a copy of virtual machine/template. Returns JSON
 Requires a dictionary of tuples formatted [('postname1','data'),('postname2','data')]
 		
