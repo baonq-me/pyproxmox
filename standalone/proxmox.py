@@ -32,18 +32,18 @@ class ProxmoxCLI():
 
 	def __init__(self):
 		# Check config file
-		config = self.loadConfig(CONFIG_FILE)
-		if config is False:
+		self.config = self.loadConfig(CONFIG_FILE)
+		if self.config is False:
 			print 'Config file not found !'
 			sys.exit(1)
 
-		connect = prox_auth(config['host'], config['user'], config['password'])
+		connect = prox_auth(self.config['host'], self.config['user'], self.config['password'])
 		if connect.status is False:
-			print 'Error when connect to ' + config['host'] + ' as ' + config['user'] + ': ' + connect.error
+			print 'Error when connect to ' + self.config['host'] + ' as ' + self.config['user'] + ': ' + connect.error
 			sys.exit(1)
 		else:
 			self.proxmox = pyproxmox(connect)
-			print 'Connected to ' + config['host'] + ' as ' + config['user']
+			print 'Connected to ' + self.config['host'] + ' as ' + self.config['user']
 
 
 	def parse_option(self):
@@ -107,7 +107,11 @@ class ProxmoxCLI():
 								netout += instance['netout']
 						print getClusterStatus['data'][i]['name'] + ' net ' + str(formatData(netin, 'GB', 3)) + 'GB ' + str(formatData(netout, 'GB', 3)) + 'GB'
 		elif self.args.clone is not None:
-			getClusterVmNextId = self.proxmox.getClusterVmNextId()
+
+			response = self.proxmox.upload('pve', 'cloudinit', 'abc.iso', 'iso')
+			print json.dumps(response)
+
+			'''getClusterVmNextId = self.proxmox.getClusterVmNextId()
 			
 			cloneConfig = {}
 			cloneConfig['node'] = self.args.clone[0]
@@ -156,14 +160,18 @@ class ProxmoxCLI():
 									}
 					response = self.proxmox.allocDiskImages(cloneConfig['node'], storage, allocPostData)
 					
-					configPostData = {	'sockets': '2',
-										'cores': str(int(cloneConfig['cpus']) / 2),
+					configPostData = {	'sockets': '2' if int(cloneConfig['cpus']) >= 2 else '1',
+										'cores': str(int(cloneConfig['cpus']) / 2) if int(cloneConfig['cpus']) >= 2 else '1',
+										'cpu': 'host',
 										'memory': cloneConfig['mem'],
-										'virtio1': 'file=' + storage + ':vm-' + cloneConfig['newvmid'] + '-disk-2'
+										'virtio1': 'file=' + storage + ':vm-' + cloneConfig['newvmid'] + '-disk-2',
+										'ide0': 'file=local:iso/cloudinit.iso,media=cdrom,size=10M'
 									}
 					response = self.proxmox.configVirtualmachine(cloneConfig['node'], cloneConfig['newvmid'], configPostData)
-					
+
 					print 'Configuration on hardware is complete. VM is ready to start.'
+					response = self.proxmox.startVirtualMachine(cloneConfig['node'], cloneConfig['newvmid'])
+					print json.dumps(response)'''
 
 
 if __name__ == "__main__":

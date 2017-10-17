@@ -21,6 +21,7 @@ For more information see https://github.com/Daemonthread/pyproxmox.
 import json
 import requests
 import sys
+import urllib
 
 # Authentication class
 class prox_auth:
@@ -90,7 +91,15 @@ class pyproxmox:
     
         httpheaders = {'Accept':'application/json','Content-Type':'application/x-www-form-urlencoded'}
         requests.packages.urllib3.disable_warnings()
-        if conn_type == "post":
+        if conn_type == "upload":
+            httpheaders = {'CSRFPreventionToken': str(self.CSRF)}       # reset header, only use CSRFPreventionToken
+            self.response = requests.post(self.full_url, verify=False, 
+                                          data = { "content": post_data["filetype"]},
+                                          files = {"filename": open(post_data["filename"], "rb")},
+                                          cookies = self.ticket,
+                                          headers = httpheaders)
+            
+        elif conn_type == "post":
             httpheaders['CSRFPreventionToken'] = str(self.CSRF)
             self.response = requests.post(self.full_url, verify=False, 
                                           data = post_data, 
@@ -449,14 +458,6 @@ class pyproxmox:
         data = self.connect('post',"nodes/%s/qemu/%s/config" % (node,vmid), post_data)
         return data
 
-    def configVirtualmachine(self,node,vmid,post_data):
-        """
-        Set virtual machine options (asynchrounous API).
-        Requires a dictionary of tuples formatted [('postname1','data'),('postname2','data')]
-        """
-        data = self.connect('post',"nodes/%s/qemu/%s/config" % (node,vmid), post_data)
-        return data
-
     def resetVirtualMachine(self,node,vmid):
         """Reset a virtual machine. Returns JSON"""
         post_data = None
@@ -622,6 +623,13 @@ class pyproxmox:
     def allocDiskImages(self,node,storage,post_data):
         """Delete storage configuration"""
         data = self.connect('post',"nodes/%s/storage/%s/content" % (node,storage), post_data)
+        return data
+
+    def upload(self,node,storage,filename,filetype):
+        """
+        Upload templates and ISO images.
+        """
+        data = self.connect('upload',"nodes/%s/storage/%s/upload" % (node,storage), {"filename": filename, "filetype": filetype})
         return data
 
     """
