@@ -11,16 +11,37 @@ import datetime
 from pyproxmox import *
 import warnings
 import sys, os
-import time
+import time, datetime
+
+# Used to run genisoimage
+import subprocess
+
+# Used to print colored text 
+from lazyme.string import palette, highlighter, formatter
+from lazyme.string import color_print
+
+
+# pyfancy: https://github.com/ilovecode1/Pyfancy-2
+from pyfancy import *
 
 CONFIG_FILE = 'proxmox.conf'
+TEMPLATE_VMID = '104'
 
 def formatData(bytes, unit, decimals):
 	units = {'KB': 1, 'MB': 2, 'GB': 3}
 	return round(bytes*1.0 / 1024**units[unit], decimals)
 
-def detail(proxmoxapi):
-	None
+def execBash(cmd):
+	process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+	output, error = process.communicate()
+	exitcode = process.returncode
+
+	return exitcode
+
+def makeCloudInitISO(vmid):
+	filename = 'VM' + vmid + '-' + datetime.datetime.now().strftime('%d_%m_%Y_%H_%M_%S') +'.iso'
+	execBash('genisoimage -quiet -output cloudinit/iso/' + filename + ' -volid cidata -joliet -rock cloudinit/user-data cloudinit/meta-data')
+	return filename
 
 class ProxmoxCLI():
 	def loadConfig(self, filename):
@@ -55,11 +76,6 @@ class ProxmoxCLI():
 		self.parser.parse_args()
 
 		self.args = self.parser.parse_args()
-		# Loop to extract names in namespace
-		#print '[DEBUG] ' + str(self.args)
-		#for arg in self.args.__dict__:
-		#	if self.args.__dict__[arg] is True:
-		#		# Call variable functions
 		if self.args.list is not None:
 			getClusterStatus = self.proxmox.getClusterStatus()
 			#print '#Node in cluster: ' + str(len(getClusterStatus['data']))
@@ -106,12 +122,10 @@ class ProxmoxCLI():
 								netin = netin + instance['netin']
 								netout += instance['netout']
 						print getClusterStatus['data'][i]['name'] + ' net ' + str(formatData(netin, 'GB', 3)) + 'GB ' + str(formatData(netout, 'GB', 3)) + 'GB'
+		
 		elif self.args.clone is not None:
 
-			response = self.proxmox.upload('pve', 'cloudinit', 'abc.iso', 'iso')
-			print json.dumps(response)
-
-			'''getClusterVmNextId = self.proxmox.getClusterVmNextId()
+			getClusterVmNextId = self.proxmox.getClusterVmNextId()
 			
 			cloneConfig = {}
 			cloneConfig['node'] = self.args.clone[0]
@@ -121,62 +135,133 @@ class ProxmoxCLI():
 			cloneConfig['mem'] = str(self.args.clone[3])
 			cloneConfig['storage'] = str(self.args.clone[4])
 
-			storage = 'local-zfs'
-			print 'Node:                ' + cloneConfig['node']
-			print 'Hostname:            ' + cloneConfig['hostname']
-			print 'New VMID:            ' + cloneConfig['newvmid']
-			print 'CPU:                 ' + cloneConfig['cpus']
-			print 'RAM:                 ' + cloneConfig['mem']
-			print 'Additional Storage:  ' + cloneConfig['storage']
-			print '[d] Type of storage: ' + storage
-			print '[d] Bus/Device:      ' + 'virtio (id = 1)'
+			pyfancy().green('[CONF]\t').raw('Template VMID:       ' + TEMPLATE_VMID).output()
+			pyfancy().green('[CONF]\t').raw('Node:                ' + cloneConfig['node']).output()
+			pyfancy().green('[CONF]\t').raw('Hostname:            ' + cloneConfig['hostname']).output()
+			pyfancy().green('[CONF]\t').raw('New VMID:            ' + cloneConfig['newvmid']).output()
+			pyfancy().green('[CONF]\t').raw('CPU:                 ' + cloneConfig['cpus']).output()
+			pyfancy().green('[CONF]\t').raw('RAM:                 ' + cloneConfig['mem'] + ' GB').output()
+			pyfancy().green('[CONF]\t').raw('Additional Storage:  ' + cloneConfig['storage'] + ' GB').output()
+			pyfancy().green('[CONF]\t').raw('Storage engine:      ' + self.config['storage_engine']).output()
+			pyfancy().green('[CONF]\t').raw('Storage bus:         ' + self.config['storage_bus']).output()
+			pyfancy().green('[CONF]\t').raw('Storage format:      ' + self.config['storage_format']).output()
 
-			clonePostData = {	'newid': cloneConfig['newvmid'], 
-								'full': '1',
-								'name': cloneConfig['hostname']
-							}
-			response = self.proxmox.cloneVirtualMachine(cloneConfig['node'], '100', clonePostData)
-			if response is None:
-				print 'Failed to clone VM'
+			LOC = str(sys._getframe().f_lineno + 1)
+			response = self.proxmox.cloneVirtualMachine(cloneConfig['node'], TEMPLATE_VMID, 
+														{	
+															'newid': cloneConfig['newvmid'], 
+															'full': '1',
+															'name': cloneConfig['hostname']
+														});
+
+			pyfancy().yellow('[DEBUG]\t').raw('cloneVirtualMachine() ' + json.dumps(response)).output()
+			if response['status']['ok'] is False:
+				pyfancy().red('[ERROR]\t') \
+						 .red('cloneVirtualMachine()').raw(' fail at line ') \
+						 .red(LOC).raw(' with HTTP code ') \
+						 .red(response['status']['code']).output()
+				pyfancy().red('\t').raw(response['status']['reason'] + ' ' + response['errors'].itervalues().next()).output()
+				return 1
 			else:
-				if response['status']['ok'] is False:
-					print "Unknown error"
-					print json.dumps(response)
-				else:
-					print 'Cloning VM ' + cloneConfig['newvmid'] + '...'
-					upid = response['data']
-					while (True):
-						time.sleep(1)
-						getNodeTaskStatusByUPID = self.proxmox.getNodeTaskStatusByUPID(cloneConfig['node'], upid)
-						if getNodeTaskStatusByUPID['data']['status'] == 'stopped':
-							print 'VM ' + cloneConfig['newvmid'] + ' is ready. Starting configuration on hardware...'
-							break
+				pyfancy().green('[INFO]\t').raw('Cloning VM ' + cloneConfig['newvmid'] + ', please wait ... ').output();
+			
+			# Wait for cloning process complete
+			UPID = response['data']
+			while (True):
+				time.sleep(1)
+				getNodeTaskStatusByUPID = self.proxmox.getNodeTaskStatusByUPID(cloneConfig['node'], UPID)
+				if getNodeTaskStatusByUPID['data']['status'] == 'stopped':
+					pyfancy().green('[INFO]\t').raw('VM ' + cloneConfig['newvmid'] + ' is ready. Starting configuration on hardware ...').output()
+					break
+			
+			LOC = str(sys._getframe().f_lineno + 1)
+			newdisk = 'vm-' + cloneConfig['newvmid'] + '-disk-2'
+			response = self.proxmox.allocDiskImages(cloneConfig['node'], self.config['storage_engine'], \
+													{	'filename': newdisk, \
+														'size': cloneConfig['storage'] + 'G', \
+														'vmid': cloneConfig['newvmid'], \
+														'format': self.config['storage_format'] \
+													})
+			pyfancy().yellow('[DEBUG]\t').raw('allocDiskImages() ' + json.dumps(response)).output()
+			if response['status']['ok'] is False:
+				pyfancy().red('[ERROR]\t') \
+						 .red('allocDiskImages()').raw(' fail at line ') \
+						 .red(LOC).raw(' with HTTP code ') \
+						 .red(response['status']['code']).output()
+				pyfancy().red('\t').raw(response['status']['reason'] + ' ' + response['errors'].itervalues().next()).output()
+				return 1
+			else:
+				pyfancy().green('[INFO]\t').raw('Disk ').green(newdisk).raw(' for VM ' + cloneConfig['newvmid'] + ' is allocated.').output()
 
-					
-					allocPostData = {	'filename': 'vm-' + cloneConfig['newvmid'] + '-disk-2',
-										'size': cloneConfig['storage'],
-										'vmid': cloneConfig['newvmid'],
-										'format': 'raw'
-									}
-					response = self.proxmox.allocDiskImages(cloneConfig['node'], storage, allocPostData)
-					
-					configPostData = {	'sockets': '2' if int(cloneConfig['cpus']) >= 2 else '1',
-										'cores': str(int(cloneConfig['cpus']) / 2) if int(cloneConfig['cpus']) >= 2 else '1',
-										'cpu': 'host',
-										'memory': cloneConfig['mem'],
-										'virtio1': 'file=' + storage + ':vm-' + cloneConfig['newvmid'] + '-disk-2',
-										'ide0': 'file=local:iso/cloudinit.iso,media=cdrom,size=10M'
-									}
-					response = self.proxmox.configVirtualmachine(cloneConfig['node'], cloneConfig['newvmid'], configPostData)
+			# upload image
+			cloudinitISO = makeCloudInitISO(cloneConfig['newvmid'])
 
-					print 'Configuration on hardware is complete. VM is ready to start.'
-					response = self.proxmox.startVirtualMachine(cloneConfig['node'], cloneConfig['newvmid'])
-					print json.dumps(response)'''
+			LOC = str(sys._getframe().f_lineno + 1)
+			response = self.proxmox.uploadContent(cloneConfig['node'], 'cloudinit', 'cloudinit/iso/' + cloudinitISO, 'iso')
+			
+			pyfancy().yellow('[DEBUG]\t').raw('uploadContent() ' + json.dumps(response)).output()
+			if response['status']['ok'] is False:
+				pyfancy().red('[ERROR]\t') \
+						 .red('uploadContent()').raw(' fail at line ') \
+						 .red(LOC).raw(' with HTTP code ') \
+						 .red(response['status']['code']).output()
+				pyfancy().red('\t').raw(response['status']['reason']).output()
+				return 1
+			else:
+				pyfancy().green('[INFO]\t').raw('cloudinit datasource ').green(cloudinitISO).raw(' for VM ' + cloneConfig['newvmid'] + ' is uploaded.').output()
+
+			LOC = str(sys._getframe().f_lineno + 1)
+			response = self.proxmox.configVirtualmachine(cloneConfig['node'], cloneConfig['newvmid'], \
+			{	'sockets': '2' if int(cloneConfig['cpus']) >= 2 else '1', \
+				'cores': str(int(cloneConfig['cpus']) / 2) if int(cloneConfig['cpus']) >= 2 else '1', \
+				'cpu': 'host', \
+				'memory': str(int(cloneConfig['mem'])*1024), \
+				 self.config['storage_bus'] + '1': 'file=' + self.config['storage_engine'] + ':vm-' + cloneConfig['newvmid'] + '-disk-2', \
+				'ide2': 'file=cloudinit:iso/' + cloudinitISO + ',media=cdrom,size=10M' \
+			})
+
+			pyfancy().yellow('[DEBUG]\t').raw('configVirtualmachine() ' + json.dumps(response)).output()
+			if response['status']['ok'] is False:
+				pyfancy().red('[ERROR]\t') \
+						 .red('configVirtualmachine()').raw(' fail at line ') \
+						 .red(LOC).raw(' with HTTP code ') \
+						 .red(response['status']['code']).output()
+				pyfancy().red('\t').raw(response['status']['reason']).output()
+				return 1
+			else:
+				pyfancy().green('[INFO]\t').raw('VM ' + cloneConfig['newvmid'] + ' is successfully configured.').output()
 
 
-if __name__ == "__main__":
+			print 'VM is configured and is starting shortly, please wait ...'
+			LOC = str(sys._getframe().f_lineno + 1)
+			response = self.proxmox.startVirtualMachine(cloneConfig['node'], cloneConfig['newvmid'])
+
+			pyfancy().yellow('[DEBUG]\t').raw('startVirtualMachine() ' + json.dumps(response)).output()
+			if response['status']['ok'] is False:
+				pyfancy().red('[ERROR]\t') \
+						 .red('startVirtualMachine()').raw(' fail at line ') \
+						 .red(LOC).raw(' with HTTP code ') \
+						 .red(response['status']['code']).output()
+				pyfancy().red('\t').raw(response['status']['reason'] + ' ' + response['errors'].itervalues().next()).output()
+				return 1
+			else:		
+				time.sleep(3)
+				for i in range(0, 4):
+					time.sleep(1)
+					getNodeTaskStatusByUPID = self.proxmox.getNodeTaskStatusByUPID(cloneConfig['node'], response['data'])
+					#print json.dumps(getNodeTaskStatusByUPID['data'])
+					if getNodeTaskStatusByUPID['data']['exitstatus'] != 'OK':
+						getNodeTaskLogByUPID = self.proxmox.getNodeTaskLogByUPID(cloneConfig['node'], response['data'])
+						pyfancy().red('[ERROR]\t').raw('Could not start VM ' + cloneConfig['newvmid'] + '. Please check configurations.').output()
+						pyfancy().red('\t').raw(getNodeTaskLogByUPID['data'][1]['t']).output()
+						return 1
+				pyfancy().green('[INFO]\t').raw('VM ' + cloneConfig['newvmid'] + ' is successfully started.').output()
+			
+			return 0
+
+if __name__ == '__main__':
 	# Disable warning for SSL verification
-	warnings.filterwarnings("ignore")
+	warnings.filterwarnings('ignore')
 
 	proxmoxcli = ProxmoxCLI()
 	proxmoxcli.parse_option()

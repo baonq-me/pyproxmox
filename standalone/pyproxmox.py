@@ -625,7 +625,7 @@ class pyproxmox:
         data = self.connect('post',"nodes/%s/storage/%s/content" % (node,storage), post_data)
         return data
 
-    def upload(self,node,storage,filename,filetype):
+    def uploadContent(self,node,storage,filename,filetype):
         """
         Upload templates and ISO images.
         """
