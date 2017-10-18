@@ -2,3 +2,4 @@
 - Make example code.
 - Add support for writing log to file
 - Cloning new VM: Add support for auto selection on proxmox node in cluster
+- ...
