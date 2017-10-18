@@ -18,6 +18,9 @@ status = b.getClusterStatus('vnode01')
 
 For more information see https://github.com/Daemonthread/pyproxmox.
 """
+
+# API: https://pve.proxmox.com/pve-docs/api-viewer/index.html
+
 import json
 import requests
 import sys
@@ -87,6 +90,7 @@ class pyproxmox:
         """
         The main communication method.
         """
+
         self.full_url = "https://%s:8006/api2/json/%s" % (self.url,option)
     
         httpheaders = {'Accept':'application/json','Content-Type':'application/x-www-form-urlencoded'}
@@ -442,12 +446,23 @@ class pyproxmox:
         data = self.connect('post',"nodes/%s/qemu" % (node), post_data)
         return data
         
-    def cloneVirtualMachine(self,node,vmid,post_data):
+    def cloneVirtualMachine(self,node,vmid, **kwargs):
         """
         Create a copy of virtual machine/template
         Requires a dictionary of tuples formatted [('postname1','data'),('postname2','data')]
         """
-        data = self.connect('post',"nodes/%s/qemu/%s/clone" % (node,vmid), post_data)
+
+        data = self.connect('post',"nodes/%s/qemu/%s/clone" % (node,vmid),  { \
+                                                                                'newid': kwargs.get('newid'), \
+                                                                                'description': kwargs.get('description'), \
+                                                                                'format': kwargs.get('format'), \
+                                                                                'full': kwargs.get('full'), \
+                                                                                'name': kwargs.get('name'), \
+                                                                                'pool': kwargs.get('pool'), \
+                                                                                'snapname': kwargs.get('snapname'), \
+                                                                                'storage': kwargs.get('storage'), \
+                                                                                'target': kwargs.get('target') \
+                                                                            })
         return data
 
     def configVirtualmachine(self,node,vmid,post_data):
@@ -494,6 +509,12 @@ class pyproxmox:
         """Stop a virtual machine. Returns JSON"""
         post_data = None
         data = self.connect('post',"nodes/%s/qemu/%s/status/stop" % (node,vmid), post_data)
+        return data
+
+    def deleteVirtualMachine(self,node,vmid):
+        """Delete a virtual machine. Returns JSON"""
+        post_data = None
+        data = self.connect('delete',"nodes/%s/qemu/%s" % (node,vmid), post_data)
         return data
 
     def suspendVirtualMachine(self,node,vmid):
@@ -620,9 +641,14 @@ class pyproxmox:
         data = self.connect('delete',"storage/%s" % (storageid),None)
         return data
 
-    def allocDiskImages(self,node,storage,post_data):
+    def allocDiskImages(self,node,storage,**kwargs):
         """Delete storage configuration"""
-        data = self.connect('post',"nodes/%s/storage/%s/content" % (node,storage), post_data)
+        data = self.connect('post',"nodes/%s/storage/%s/content" % (node,storage),  { \
+                                                                                        'filename': kwargs.get('filename'), \
+                                                                                        'size': kwargs.get('size'), \
+                                                                                        'vmid': kwargs.get('vmid'), \
+                                                                                        'format': kwargs.get('format'), \
+                                                                                    })
         return data
 
     def uploadContent(self,node,storage,filename,filetype):
