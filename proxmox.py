@@ -294,6 +294,8 @@ class ProxmoxCLI():
 			else:
 				return 1
 
+			#response = self.proxmox.configVirtualmachine(cloneConfig['node'], cloneConfig['newvmid'],{'ide2': 'none,media=cdrom'})
+			
 			#if self.args.debug is not None:
 			#json.dumps(self.proxmox.stopVirtualMachine(cloneConfig['node'], cloneConfig['newvmid']))
 			#time.sleep(3)
@@ -306,7 +308,7 @@ if __name__ == '__main__':
 	warnings.filterwarnings('ignore')
 
 	proxmoxcli = ProxmoxCLI()
-	#for i in range(105,115):
+	#for i in range(105,119):
 	#	proxmoxcli.proxmox.deleteVirtualMachine('pve', str(i))
 	proxmoxcli.parse_option()
 
