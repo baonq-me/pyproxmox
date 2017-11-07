@@ -1,0 +1,13 @@
+#cloud-config
+
+password: Admin2355
+ssh_pwauth: True
+chpasswd: { expire: False }
+package_upgrade: true
+
+# replace with your own public key (e.g. ~/.ssh/id_rsa.pub)
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCe34boIawTdJs5D8A0XeSLPv1t0sCt7nTbD9wxfeASwyqh75bfhKDlm8WQ7czdxugX07PnzUYH1iyf0Sz1PlFxtP9n43dICjC6uQexloNQ16yiUN54N1+fgFYUJ85P2V3AloI1H3SW27UVW4SrPQqfO9fbFlJ2S6SBPZzME+NiOLrfAao9ZWDjnXZiyz46Da/VjtOhrJEKYR5ASkRvuPY+TrsVkb5e4RnTEztAeIBLA7AbDYb9AlPXnggBeNpefg/qMDLcJBosI15g69ST+pPWVBuGMSws06IlLJIUMzV3PLs9w03RvobBVQHm+42Lup0JvuEtpK5j232eiYw2cP3RpsyUdIBcClSGuMQmoiXxfU0zuhLEoUE0kjBjq+nn1x3juTHwZ1imz+vuCuqlgTSZ5QYOX2uw7uZBB3E+cB9MhsOS4bMD/FH4SSIPuRwG6ka1RnQOTHYVVtR99Sv7djxykD0KknZlvE9yiFQC/PbGrrt8Z9Sw3iTOv6m0NjZcPU5k60lSLLywelSwuB8NwZaIdL/d3r0/YWXvY9vfk3Vjz1mo0yVB20HXvpRP4GvuwkrZlplW3kP+MpT2ori7FZ5c7kRBeOc+AKcg2ujXisi7nWjIhLBYuKaiP/lVzMAdTy4Lr/e/0lCMiRyWTeMoSBfu6yaz2QU20g03JLyqkvxAow== quocbao@monster
+
+  runcmd:
+   - [vgextend, template-vg, /dev/vdb]
