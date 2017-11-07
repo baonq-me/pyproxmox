@@ -30,19 +30,12 @@ import time, datetime, json, re
 # Call genisoimage via cli
 import subprocess
 
-# Print colored text 
-from lazyme.string import palette, highlighter, formatter
-from lazyme.string import color_print
-
-# Convert unicode to float
-#import decimal
-
 # pyfancy: https://github.com/ilovecode1/Pyfancy-2
 # Print colored text
 from pyfancy import *
 
 CONFIG_FILE = 'proxmox.conf'
-TEMPLATE_VMID = '104'
+
 
 HTTP_STATUS_CODE = {400: 'Bad request', 500: 'Internal Server Error'}
 
@@ -194,13 +187,12 @@ class ProxmoxCLI():
 			cloneConfig['newvmid'] = str(self.proxmox.getClusterVmNextId()['data'])
 			cloneConfig['cpus'] = self.args.cpu[0]
 			cloneConfig['mem'] = humanfriendly.parse_size(self.args.mem[0], binary=True)
-			print('Mem: ' + str(cloneConfig['mem']) + ' bytes')
 
 			cloneConfig['storage'] = humanfriendly.parse_size(self.args.storage[0])
 			cloneConfig['newdisk'] = 'vm-' + cloneConfig['newvmid'] + '-disk-2'
 
 			pyfancy().green('[CONF]\t').raw('Node:                ' + cloneConfig['node']).output()
-			pyfancy().green('[CONF]\t').raw('Template VMID:       ' + TEMPLATE_VMID).output()
+			pyfancy().green('[CONF]\t').raw('Template VMID:       ' + self.config['template_vm']).output()
 			pyfancy().green('[CONF]\t').raw('New VMID:            ' + cloneConfig['newvmid']).output()
 			pyfancy().green('[CONF]\t').raw('Hostname:            ' + cloneConfig['hostname']).output()
 			pyfancy().green('[CONF]\t').raw('CPU unit:            ' + cloneConfig['cpus']).output()
@@ -213,7 +205,7 @@ class ProxmoxCLI():
 			pyfancy().green('[CONF]\t').raw('Storage format:      ' + self.config['storage_format']).output()
 
 
-			response = self.proxmox.cloneVirtualMachine(cloneConfig['node'], TEMPLATE_VMID, \
+			response = self.proxmox.cloneVirtualMachine(cloneConfig['node'], self.config['template_vm'], \
 																newid=cloneConfig['newvmid'], \
 																full='1', \
 																name=cloneConfig['hostname'])
