@@ -1,19 +1,15 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 
 # Ref: https://github.com/baonq-me/pyproxmox
 # Ref: https://github.com/Daemonthread/pyproxmox
 # Ref: https://github.com/frederickding/Cloud-Init-ISO
-"""
 
-Installation: 
+# Parse config from proxmox.cfg
+import configparser
 
-sudo pip install requests
-sudo pip install requests==2.6.0
+CONFIG_FILE = 'proxmox.cfg'
 
-"""
 
-# Use print() of Python 3 on Python 2
-from __future__ import print_function
 
 # Handle input as arguments
 import argparse
@@ -33,8 +29,6 @@ import subprocess
 # pyfancy: https://github.com/ilovecode1/Pyfancy-2
 # Print colored text
 from pyfancy import *
-
-CONFIG_FILE = 'proxmox.conf'
 
 
 HTTP_STATUS_CODE = {400: 'Bad request', 500: 'Internal Server Error'}
@@ -59,7 +53,7 @@ def debug(functionName, jsonResponse, debugMode):
 				 .red(functionName).raw(' fail with HTTP code ') \
 				 .red('%s (%s)' % (jsonResponse['status']['code'],HTTP_STATUS_CODE[jsonResponse['status']['code']])).output()
 		pyfancy().red('\t').raw(jsonResponse['status']['reason']).output()
-		if 'error' in jsonResponse:
+		if 'errors' in jsonResponse:
 			for message in jsonResponse['errors']:
 				pyfancy().red('\t').raw('[%s] %s' % (message,jsonResponse['errors'][message])).output()
 		return 1
@@ -75,27 +69,22 @@ def alert(percent, content, yellowLevel, redLevel):
 
 
 class ProxmoxCLI():
-	def loadConfig(self, filename):
-		if os.path.exists(filename) is False:
-			return False
-		with open(filename) as data:
-			conf = json.load(data)
-			return conf
-
-	def __init__(self):
-		# Check config file
-		self.config = self.loadConfig(CONFIG_FILE)
-		if self.config is False:
-			pyfancy().red('[ERROR]\t').raw('Config file not found !').output()
+	def __init__(self, configFile):
+		self.conf = configparser.ConfigParser()
+		try:
+			self.conf.read(configFile)
+		except:
+			pyfancy().red('[ERROR]\t').raw('Could not read configuration file ' + configFile).output()
 			sys.exit(1)
 
-		connect = prox_auth(self.config['host'], self.config['user'], self.config['password'])
+
+		connect = prox_auth(self.conf.get('server', 'host'), self.conf.get('server', 'user'), self.conf.get('server', 'password'))
 		if connect.status is False:
-			pyfancy().red('[ERROR]\t').raw('Could not connect to ' + self.config['host'] + ' as ' + self.config['user'] + ': ' + connect.error).output()
+			pyfancy().red('[ERROR]\t').raw('Could not connect to ' + self.conf.get('server', 'host') + ' as ' + self.conf.get('server', 'user') + ': ' + connect.error).output()
 			sys.exit(1)
 		else:
 			self.proxmox = pyproxmox(connect)
-			pyfancy().green('[INFO]\t').raw('Connected to ' + self.config['host'] + ' as ' + self.config['user']).output()
+			pyfancy().green('[INFO]\t').raw('Connected to ' + self.conf.get('server', 'host') + ' as ' + self.conf.get('server', 'user')).output()
 
 
 	def parse_option(self):
@@ -182,28 +171,28 @@ class ProxmoxCLI():
 			cloneConfig['hostname'] = self.args.hostname[0]
 			cloneConfig['newvmid'] = str(self.proxmox.getClusterVmNextId()['data'])
 			cloneConfig['cpus'] = self.args.cpu[0]
+			
 			cloneConfig['mem'] = humanfriendly.parse_size(self.args.mem[0], binary=True)
-
-			cloneConfig['storage'] = humanfriendly.parse_size(self.args.storage[0])
+			cloneConfig['storage'] = humanfriendly.parse_size(self.args.storage[0], binary = True)
+			
 			cloneConfig['newdisk'] = 'vm-' + cloneConfig['newvmid'] + '-disk-2'
 
 			pyfancy().green('[CONF]\t').raw('Node:                ' + cloneConfig['node']).output()
-			pyfancy().green('[CONF]\t').raw('Template VMID:       ' + self.config['template_vm']).output()
+			pyfancy().green('[CONF]\t').raw('Template VMID:       ' + self.conf.get('template', 'vmid')).output()
 			pyfancy().green('[CONF]\t').raw('New VMID:            ' + cloneConfig['newvmid']).output()
 			pyfancy().green('[CONF]\t').raw('Hostname:            ' + cloneConfig['hostname']).output()
 			pyfancy().green('[CONF]\t').raw('CPU unit:            ' + cloneConfig['cpus']).output()
-			pyfancy().green('[CONF]\t').raw('Emulated CPU type:   ' + self.config['cpu_type']).output()
+			pyfancy().green('[CONF]\t').raw('Emulated CPU type:   ' + self.conf.get('qemu', 'cpu_type')).output()
 			pyfancy().green('[CONF]\t').raw('Memory (RAM):        ' + humanfriendly.format_size(cloneConfig['mem'], binary = True)).output()
-			pyfancy().green('[CONF]\t').raw('Inital Storage:      ' + self.config['init_storage'] + ' GB').output()
-			pyfancy().green('[CONF]\t').raw('Additional Storage:  ' + humanfriendly.format_size(cloneConfig['storage']) + ' (' + cloneConfig['newdisk'] + ')').output()
-			pyfancy().green('[CONF]\t').raw('Storage engine:      ' + self.config['storage_engine']).output()
-			pyfancy().green('[CONF]\t').raw('Storage bus:         ' + self.config['storage_bus']).output()
-			pyfancy().green('[CONF]\t').raw('Storage format:      ' + self.config['storage_format']).output()
+			pyfancy().green('[CONF]\t').raw('Inital Storage:      ' + self.conf.get('storage', 'root')).output()
+			pyfancy().green('[CONF]\t').raw('Additional Storage:  ' + humanfriendly.format_size(cloneConfig['storage'], binary = True) + ' (' + cloneConfig['newdisk'] + ')').output()
+			pyfancy().green('[CONF]\t').raw('Storage engine:      ' + self.conf.get('storage', 'engine')).output()
+			pyfancy().green('[CONF]\t').raw('Storage bus:         ' + self.conf.get('storage', 'bus')).output()
+			pyfancy().green('[CONF]\t').raw('Storage format:      ' + self.conf.get('storage', 'format')).output()
 
-
-			response = self.proxmox.cloneVirtualMachine(cloneConfig['node'], self.config['template_vm'], \
-																newid=cloneConfig['newvmid'], \
-																full='1', \
+			response = self.proxmox.cloneVirtualMachine(cloneConfig['node'], self.conf.get('template', 'vmid'),
+																newid=cloneConfig['newvmid'],
+																full='1',
 																name=cloneConfig['hostname'])
 			
 			if debug('cloneVirtualMachine()', response, self.args.debug) == 0:
@@ -216,15 +205,17 @@ class ProxmoxCLI():
 			while (True):
 				time.sleep(1)
 				getNodeTaskStatusByUPID = self.proxmox.getNodeTaskStatusByUPID(cloneConfig['node'], UPID)
-				if getNodeTaskStatusByUPID['data']['status'] == 'stopped':
-					pyfancy().green('[INFO]\t').raw('VM ' + cloneConfig['newvmid'] + ' is ready. Starting configuration on hardware ...').output()
-					break
+				if 'status' in getNodeTaskStatusByUPID['data']:
+					if getNodeTaskStatusByUPID['data']['status'] == 'stopped':
+						pyfancy().green('[INFO]\t').raw('VM ' + cloneConfig['newvmid'] + ' is ready. Starting configuration on hardware ...').output()
+						break
 
-			response = self.proxmox.allocDiskImages(cloneConfig['node'], self.config['storage_engine'], \
-							filename = cloneConfig['newdisk'], \
-							size = str(cloneConfig['storage']/1000000000)+'G' if cloneConfig['storage']/1000000000 > 0 else str(cloneConfig['storage']/1000000) + 'M', \
-							vmid = cloneConfig['newvmid'], \
-							format = self.config['storage_format'] \
+
+			response = self.proxmox.allocDiskImages(cloneConfig['node'], self.conf.get('storage', 'engine'),
+							filename = cloneConfig['newdisk'],
+							size = str(int(cloneConfig['storage']/1024**2))+'M',
+							vmid = cloneConfig['newvmid'],
+							format = self.conf.get('storage', 'format')
 							)
 			
 			if debug('allocDiskImages()', response, self.args.debug) == 0:
@@ -234,7 +225,7 @@ class ProxmoxCLI():
 
 			# upload image
 			cloudinitISO = makeCloudInitISO(cloneConfig['newvmid'])
-			response = self.proxmox.uploadContent(cloneConfig['node'], self.config['cloudinit_storage'], 'cloudinit/iso/' + cloudinitISO, 'iso')
+			response = self.proxmox.uploadContent(cloneConfig['node'], self.conf.get('storage', 'cloudinit'), 'cloudinit/iso/' + cloudinitISO, 'iso')
 			
 			if debug('uploadContent()', response, self.args.debug) == 0:
 				pyfancy().green('[INFO]\t').raw('cloudinit datasource ').green(cloudinitISO).raw(' for VM ' + cloneConfig['newvmid'] + ' is uploaded.').output()
@@ -242,7 +233,7 @@ class ProxmoxCLI():
 				return 1
 				
 
-			response = self.proxmox.configVirtualmachine(cloneConfig['node'], cloneConfig['newvmid'], \
+			response = self.proxmox.configVirtualmachine(cloneConfig['node'], cloneConfig['newvmid'],
 						{	
 							'kvm': '1', 			# Enable KVM virtualization
 							'onboot': '1', 			# VM will start automatically after host is up
@@ -250,10 +241,10 @@ class ProxmoxCLI():
 							'shares': '0', 			# Disable auto ballooning
 							'sockets': '1', 
 							'cores': cloneConfig['cpus'], 
-							'cpu': self.config['cpu_type'],
-							'memory': str(cloneConfig['mem']/(1024**2)), 
-							 self.config['storage_bus'] + '1': 'file=' + self.config['storage_engine'] + ':vm-' + cloneConfig['newvmid'] + '-disk-2',
-							'ide2': 'file=' + self.config['cloudinit_storage'] + ':iso/' + cloudinitISO + ',media=cdrom'
+							'cpu': self.conf.get('qemu', 'cpu_type'),
+							'memory': str(int(cloneConfig['mem']/1024**2)), 
+							 self.conf.get('storage', 'bus') + '1': 'file=' + self.conf.get('storage', 'engine') + ':vm-' + cloneConfig['newvmid'] + '-disk-2',
+							'ide2': 'file=' + self.conf.get('storage', 'cloudinit') + ':iso/' + cloudinitISO + ',media=cdrom'
 						})
 
 			if debug('configVirtualmachine()', response, self.args.debug) == 0:
@@ -270,24 +261,23 @@ class ProxmoxCLI():
 					time.sleep(1)
 					upid = response['data']
 					getNodeTaskStatusByUPID = self.proxmox.getNodeTaskStatusByUPID(cloneConfig['node'], upid)
-					if getNodeTaskStatusByUPID['data']['exitstatus'] != 'OK':
-						getNodeTaskLogByUPID = self.proxmox.getNodeTaskLogByUPID(cloneConfig['node'], response['data'])
-						if self.args.debug is not None:
-							pyfancy().yellow('[DEBUG]\t').raw('getNodeTaskLogByUPID() ' + json.dumps(getNodeTaskLogByUPID)).output()
-						pyfancy().red('[ERROR]\t').raw('Could not start VM ' + cloneConfig['newvmid'] + '. Please check configurations.').output()
-						for message in getNodeTaskLogByUPID['data']:
-							pyfancy().raw('\t').raw(message['t']).output()
-						return 1
+					if 'exitstatus' in getNodeTaskStatusByUPID['data']:
+						if getNodeTaskStatusByUPID['data']['exitstatus'] != 'OK':
+							getNodeTaskLogByUPID = self.proxmox.getNodeTaskLogByUPID(cloneConfig['node'], response['data'])
+							if self.args.debug is not None:
+								pyfancy().yellow('[DEBUG]\t').raw('getNodeTaskLogByUPID() ' + json.dumps(getNodeTaskLogByUPID)).output()
+							pyfancy().red('[ERROR]\t').raw('Could not start VM ' + cloneConfig['newvmid'] + '. Please check configurations.').output()
+							for message in getNodeTaskLogByUPID['data']:
+								pyfancy().raw('\t').raw(message['t']).output()
+							return 1
 				pyfancy().green('[INFO]\t').raw('VM ' + cloneConfig['newvmid'] + ' is successfully started.').output()
 			else:
 				return 1
-
-			#response = self.proxmox.configVirtualmachine(cloneConfig['node'], cloneConfig['newvmid'],{'ide2': 'none,media=cdrom'})
 			
 			#if self.args.debug is not None:
-			#json.dumps(self.proxmox.stopVirtualMachine(cloneConfig['node'], cloneConfig['newvmid']))
-			#time.sleep(3)
-			#json.dumps(self.proxmox.deleteVirtualMachine(cloneConfig['node'], cloneConfig['newvmid']))
+				#json.dumps(self.proxmox.stopVirtualMachine(cloneConfig['node'], cloneConfig['newvmid']))
+				#time.sleep(3)
+				#json.dumps(self.proxmox.deleteVirtualMachine(cloneConfig['node'], cloneConfig['newvmid']))
 
 			return 0
 
@@ -295,8 +285,8 @@ if __name__ == '__main__':
 	# Disable warning for SSL verification
 	warnings.filterwarnings('ignore')
 
-	proxmoxcli = ProxmoxCLI()
-	#for i in range(105,119):
+	proxmoxcli = ProxmoxCLI(CONFIG_FILE)
+	#for i in range(108,118):
 	#	proxmoxcli.proxmox.deleteVirtualMachine('pve', str(i))
 	proxmoxcli.parse_option()
 
