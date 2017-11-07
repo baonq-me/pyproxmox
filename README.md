@@ -10,7 +10,7 @@ This readme is edited by me.
 
 ## 1. Installation and dependencies
 
-1. Install original pyproxmox library and other dependencies
+1. Install dependencies
 
 ```
 	sudo apt-get install python2.7 python-pip
