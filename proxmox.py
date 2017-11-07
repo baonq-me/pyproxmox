@@ -39,10 +39,6 @@ CONFIG_FILE = 'proxmox.conf'
 
 HTTP_STATUS_CODE = {400: 'Bad request', 500: 'Internal Server Error'}
 
-def formatData(bytes, unit, decimals):
-	units = {'KB': 1, 'MB': 2, 'GB': 3}
-	return round(bytes*1.0 / 1024**units[unit], decimals)
-
 def execBash(cmd):
 	process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
 	output, error = process.communicate()
@@ -135,11 +131,11 @@ class ProxmoxCLI():
 					if len(self.args.detail) == 0 or 'storage' in self.args.detail:
 						getNodeStorage = self.proxmox.getNodeStorage(getClusterStatus['data'][i]['name'])
 						for j in range(0, len(getNodeStorage['data'])):
-							total = formatData(getNodeStorage['data'][j]['total'], 'GB', 2)
-							used = formatData(getNodeStorage['data'][j]['used'], 'GB', 2)
+							total = getNodeStorage['data'][j]['total']
+							used = getNodeStorage['data'][j]['used']
 							percent = round(1.0*used/total*100, 2)
 							alert(percent, 'STAT', 75, 90)
-							pyfancy().raw(getClusterStatus['data'][i]['name'] + ' storage ' + getNodeStorage['data'][j]['storage'] + ' ' + str(used) + 'GB ' + str(total) + 'GB ' + str(percent) + '%').output()
+							pyfancy().raw(getClusterStatus['data'][i]['name'] + ' storage ' + getNodeStorage['data'][j]['storage'] + ' ' + humanfriendly.format_size(used, binary = True) + ' ' + humanfriendly.format_size(total, binary = True) + ' ' + str(percent) + '%').output()
 				
 					# CPU
 					if len(self.args.detail) == 0 or 'cpu' in self.args.detail:
@@ -152,18 +148,18 @@ class ProxmoxCLI():
 					if len(self.args.detail) == 0 or 'mem' in self.args.detail:
 						# RAM
 						getNodeStatus = self.proxmox.getNodeStatus(getClusterStatus['data'][i]['name'])
-						total = formatData(getNodeStatus['data']['memory']['total'], 'GB', 2)
-						used = formatData(getNodeStatus['data']['memory']['used'], 'GB', 2)
+						total = getNodeStatus['data']['memory']['total']
+						used = getNodeStatus['data']['memory']['used']
 						percent = round(1.0*used/total*100, 2)						
 						alert(percent, 'STAT', 75, 90)
-						pyfancy().raw(getClusterStatus['data'][i]['name'] + ' mem ram ' + str(used) + 'GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%').output()
+						pyfancy().raw(getClusterStatus['data'][i]['name'] + ' mem ram ' + humanfriendly.format_size(used, binary = True) + ' ' + humanfriendly.format_size(total, binary = True) + ' ' + str(percent) + '%').output()
 
 						# Swap
-						total = formatData(getNodeStatus['data']['swap']['total'], 'GB', 2)
-						used = formatData(getNodeStatus['data']['swap']['used'], 'GB', 2)
+						total = getNodeStatus['data']['swap']['total']
+						used = getNodeStatus['data']['swap']['used']
 						percent = round(1.0*used/total*100, 2)
 						alert(percent, 'STAT', 75, 90)
-						pyfancy().raw(getClusterStatus['data'][i]['name'] + ' mem swap ' + str(used) + 'GB ' + str(total) + 'GB ' + str(round(used/total*100, 2)) + '%').output()
+						pyfancy().raw(getClusterStatus['data'][i]['name'] + ' mem swap ' + humanfriendly.format_size(used, binary = True) + ' ' + humanfriendly.format_size(total, binary = True) + ' ' + str(percent) + '%').output()
 
 					# CPU
 					if len(self.args.detail) == 0 or 'net' in self.args.detail:
@@ -172,10 +168,10 @@ class ProxmoxCLI():
 						netout = 0
 						for instance in getNodeVirtualIndex['data']:
 							if instance['uptime'] != 0:
-								pyfancy().green('[STAT]\t').raw(getClusterStatus['data'][i]['name'] + ' net vmid ' + str(instance['vmid']) + ' ' + str(formatData(instance['netin'], 'MB', 2)) + 'MB ' + str(formatData(instance['netout'], 'MB', 2)) + 'MB').output()
+								pyfancy().green('[STAT]\t').raw(getClusterStatus['data'][i]['name'] + ' net vmid ' + str(instance['vmid']) + ' ' + humanfriendly.format_size(instance['netin'], binary = True) + ' ' + humanfriendly.format_size(instance['netout'], binary = True)).output()
 								netin = netin + instance['netin']
 								netout += instance['netout']
-						pyfancy().green('[STAT]\t').raw(getClusterStatus['data'][i]['name'] + ' net ' + str(formatData(netin, 'GB', 3)) + 'GB ' + str(formatData(netout, 'GB', 3)) + 'GB').output()
+						pyfancy().green('[STAT]\t').raw(getClusterStatus['data'][i]['name'] + ' net ' + humanfriendly.format_size(netin, binary = True)  + ' ' + humanfriendly.format_size(netout, binary = True)).output()
 		
 		elif self.args.clone is not None:
 			if self.args.debug is not None:
