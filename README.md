@@ -13,15 +13,10 @@ This readme is edited by me.
 1. Install original pyproxmox library and other dependencies
 
 ```
-	sudo pip install pyproxmox
-	sudo pip install quests==2.6.0
-```
-
-2. Clone this repo and overwrite existing pyproxmox
-
-```
-	git clone https://github.com/baonq-me/pyproxmox
-	sudo cp pyproxmox/src/pyproxmox.py /usr/local/lib/python2.7/dist-packages/pyproxmox.py
+	sudo apt-get install python2.7 python-pip
+	sudo pip install --upgrade pip
+	sudo wget https://raw.githubusercontent.com/ilovecode1/Pyfancy-2/master/pyfancy/pyfancy.py /usr/lib/python2.7/
+	sudo pip install requests humanfriendly lazyme
 ```
 
 ## 2. Example usage
