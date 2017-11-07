@@ -15,7 +15,7 @@ This readme is edited by me.
 ```
 	sudo apt-get install python2.7 python-pip genisoimage
 	sudo pip install --upgrade pip
-	sudo wget https://raw.githubusercontent.com/ilovecode1/Pyfancy-2/master/pyfancy/pyfancy.py /usr/lib/python2.7/
+	sudo wget https://raw.githubusercontent.com/ilovecode1/Pyfancy-2/master/pyfancy/pyfancy.py -P /usr/lib/python2.7/
 	sudo pip install requests humanfriendly lazyme
 ```
 
